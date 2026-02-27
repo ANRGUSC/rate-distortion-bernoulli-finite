@@ -585,12 +585,92 @@ To solve the optimization~(\ref{eq:rd_bernoulli_opt}), we form the Lagrangian
 \mathcal{L} = I(X; \hat{X}) + \lambda \bigl(\E[d(X, \hat{X})] - D\bigr),
 \end{equation}
 where $\lambda \geq 0$ is the Lagrange multiplier.
-The Karush-Kuhn-Tucker (KKT) conditions for optimality yield a structural
-result that is central to rate-distortion theory.
+We now work through the Karush-Kuhn-Tucker (KKT) conditions step by step
+to show that the optimal test channel is a binary symmetric channel with
+crossover probability~$D$.
 
-It turns out that the optimal test channel is a \emph{binary symmetric channel}
-(BSC) with crossover probability equal to the target distortion $D$.
-That is, the optimal solution has $\alpha = \beta = D$, giving
+\smallskip
+\noindent\textbf{Step 1: Expand the Lagrangian.}
+Using the mutual information definition~(\ref{eq:mutual_info}), we write
+$I(X;\hat{X})$ as a function of the test channel parameters $\alpha$ and
+$\beta$ from~(\ref{eq:test_channel_matrix}).
+The marginal reproduction distribution is
+\[
+p_{\hat{X}}(0) = (1-p)(1-\alpha) + p\beta, \qquad
+p_{\hat{X}}(1) = (1-p)\alpha + p(1-\beta).
+\]
+The mutual information is
+\begin{align}
+I(X;\hat{X}) &= (1-p)(1-\alpha)\log_2\frac{1-\alpha}{p_{\hat{X}}(0)}
+  + (1-p)\alpha\log_2\frac{\alpha}{p_{\hat{X}}(1)} \notag\\
+  &\quad + p\beta\log_2\frac{\beta}{p_{\hat{X}}(0)}
+  + p(1-\beta)\log_2\frac{1-\beta}{p_{\hat{X}}(1)},
+\end{align}
+and the distortion is $\E[d(X,\hat{X})] = (1-p)\alpha + p\beta$.
+The full Lagrangian is therefore
+\[
+\mathcal{L}(\alpha,\beta,\lambda) = I(X;\hat{X}) + \lambda\bigl[(1-p)\alpha + p\beta - D\bigr].
+\]
+
+\smallskip
+\noindent\textbf{Step 2: Stationarity conditions.}
+We differentiate $\mathcal{L}$ with respect to $\alpha$ and $\beta$ and set
+each derivative to zero.
+Differentiating the mutual information with respect to $\alpha$, using
+$\partial p_{\hat{X}}(0)/\partial\alpha = -(1-p)$ and
+$\partial p_{\hat{X}}(1)/\partial\alpha = (1-p)$, gives (after simplification)
+\[
+\frac{\partial I}{\partial \alpha}
+= (1-p)\log_2\frac{\alpha(1-\alpha)^{-1}}{p_{\hat{X}}(1)\,p_{\hat{X}}(0)^{-1}}
+= (1-p)\log_2\frac{\alpha\, p_{\hat{X}}(0)}{(1-\alpha)\,p_{\hat{X}}(1)}.
+\]
+Setting $\partial\mathcal{L}/\partial\alpha = 0$ yields
+\begin{equation}
+\label{eq:kkt_alpha}
+(1-p)\log_2\frac{\alpha\, p_{\hat{X}}(0)}{(1-\alpha)\,p_{\hat{X}}(1)} + \lambda(1-p) = 0
+\quad\Longrightarrow\quad
+\log_2\frac{\alpha\, p_{\hat{X}}(0)}{(1-\alpha)\,p_{\hat{X}}(1)} = -\lambda.
+\end{equation}
+By an identical calculation with respect to $\beta$:
+\begin{equation}
+\label{eq:kkt_beta}
+\log_2\frac{(1-\beta)\, p_{\hat{X}}(0)}{\beta\,p_{\hat{X}}(1)} = \lambda.
+\end{equation}
+
+\smallskip
+\noindent\textbf{Step 3: Show $\alpha = \beta$.}
+From~(\ref{eq:kkt_alpha}) and~(\ref{eq:kkt_beta}), we have
+\[
+\frac{\alpha}{1-\alpha}\cdot\frac{p_{\hat{X}}(0)}{p_{\hat{X}}(1)} = 2^{-\lambda}
+\qquad\text{and}\qquad
+\frac{1-\beta}{\beta}\cdot\frac{p_{\hat{X}}(0)}{p_{\hat{X}}(1)} = 2^{\lambda}.
+\]
+Multiplying these two equations together, the factors of
+$p_{\hat{X}}(0)/p_{\hat{X}}(1)$ cancel and we obtain
+\[
+\frac{\alpha(1-\beta)}{(1-\alpha)\beta} = 1,
+\]
+which implies $\alpha(1-\beta) = \beta(1-\alpha)$, and therefore $\alpha = \beta$.
+
+\smallskip
+\noindent\textbf{Step 4: Complementary slackness and primal feasibility.}
+The KKT conditions require \emph{dual feasibility} ($\lambda \geq 0$) and
+\emph{complementary slackness}:
+$\lambda\bigl[(1-p)\alpha + p\beta - D\bigr] = 0$.
+For $0 < D < \min(p,1-p)$ the rate-distortion function is strictly positive,
+so the constraint must be active (otherwise we could reduce the rate further).
+This means $\lambda > 0$ and complementary slackness forces
+\[
+(1-p)\alpha + p\beta = D.
+\]
+Since $\alpha = \beta$ from Step~3, this becomes
+$\alpha\bigl[(1-p) + p\bigr] = \alpha = D$.
+We conclude $\alpha^* = \beta^* = D$.
+
+\smallskip
+\noindent\textbf{Result.}
+The optimal test channel is a \emph{binary symmetric channel} (BSC) with
+crossover probability equal to the target distortion:
 \begin{equation}
 \label{eq:optimal_test_channel}
 p^*_{\hat{X}|X} =
@@ -599,14 +679,12 @@ p^*_{\hat{X}|X} =
 D & 1 - D
 \end{pmatrix}.
 \end{equation}
-To build intuition for why this is the case, observe that the BSC treats both
-source symbols symmetrically: regardless of whether the input is $0$ or $1$,
-the channel flips it with probability $D$.
-This symmetry is natural because the Hamming distortion itself treats errors
-symmetrically.
-Any asymmetric test channel (with $\alpha \neq \beta$) would ``waste'' distortion
-budget by allocating more error probability to one symbol than the other, without
-any compensating reduction in mutual information.
+This makes intuitive sense: the Hamming distortion treats errors symmetrically
+(a $0 \to 1$ flip costs the same as a $1 \to 0$ flip), so the optimal test
+channel treats both source symbols symmetrically as well.
+Any asymmetric channel (with $\alpha \neq \beta$) would waste distortion budget
+by allocating more error probability to one symbol than the other, without any
+compensating reduction in mutual information.
 
 The corresponding Lagrange multiplier is
 \begin{equation}
