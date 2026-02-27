@@ -439,8 +439,10 @@ We can now state the central question of rate-distortion theory:
 encoder-decoder pairs achieving average distortion at most $D$?}
 \medskip
 
-Shannon's remarkable insight was that this minimum rate is given by a single-letter
-optimization, independent of the block length~\cite{shannon1959}.
+Shannon's remarkable insight was that this minimum rate is given by a ``single-letter''
+optimization (meaning it involves only the distribution of one source symbol and one
+reproduction symbol, not the full length-$n$ sequences), independent of the block
+length~\cite{shannon1959}.
 We do not need to search over all possible encoder-decoder pairs of all possible
 block lengths.
 Instead, the answer depends only on the source distribution $p_X$ and the
