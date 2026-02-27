@@ -46,7 +46,9 @@
 
 % ---- Title ----
 \title{\LARGE Finite Block Length Rate-Distortion Theory for the\\Bernoulli Source with Hamming Distortion: A Tutorial}
-\author{Bhaskar Krishnamachari}
+\author{Bhaskar Krishnamachari\\
+University of Southern California\\
+\texttt{bkrishna@usc.edu}}
 \date{February 27, 2026}
 
 \begin{document}
@@ -671,6 +673,9 @@ where $Q^*(\hat{x}) = p^*_{\hat{X}}(\hat{x})$ is the optimal reproduction
 distribution (which the test channel must be self-consistent with) and
 $Z(x) = \sum_{\hat{x}} Q^*(\hat{x})\,2^{-\lambda\,d(x,\hat{x})}$ is the
 normalizing constant ensuring $\sum_{\hat{x}} p^*_{\hat{X}|X}(\hat{x}|x) = 1$.
+(The notation $Q^*$ for the reproduction distribution is standard in
+rate-distortion theory and should not be confused with the Gaussian $Q$-function
+introduced in Section~\ref{subsec:normal_approx}.)
 
 The Gibbs form has a natural interpretation: the optimal test channel takes
 the reproduction distribution $Q^*$ and \emph{reweights} each reproduction symbol
@@ -1001,6 +1006,10 @@ the algorithm minimizes the functional
 F(s) = \min_{p_{\hat{X}|X}} \bigl[ I(X; \hat{X}) + s \cdot \E[d(X, \hat{X})] \bigr].
 \end{equation}
 By sweeping $s$ over positive values, we trace out the entire $\RD$ curve.
+(The slope $s$ here is in nats and relates to the Lagrange multiplier $\lambda^*$
+from Section~\ref{subsec:optimal_test_channel} by $s = \lambda^* \ln 2$; the natural
+exponential $e^{-s\,d}$ in Step~1 below is equivalent to the
+$2^{-\lambda\,d}$ form used there.)
 
 The algorithm alternates between two updates:
 
@@ -1668,6 +1677,16 @@ of the penalty for operating at practical block lengths.
 The normal approximation $R(n, D, \varepsilon) \approx \RD + \sqrt{V(D)/n}\, \Qinv(\varepsilon)$
 is both elegant in form and useful in practice, offering a direct design rule
 for system engineers.
+
+
+% ========================================================================
+% ACKNOWLEDGEMENT
+% ========================================================================
+\section*{Acknowledgement}
+
+The development of this tutorial and the associated Python code has involved
+the use of several AI tools/agents including Claude Code, ChatGPT, and Gemini.
+The human author accepts full responsibility for its contents.
 
 
 % ========================================================================
