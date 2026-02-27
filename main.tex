@@ -97,6 +97,35 @@ latency, and finite computational resources.
 A natural and practically important question therefore arises: \emph{how much
 extra rate do we need when the block length is finite?}
 
+To build intuition, consider the simplest possible lossy compression scheme.
+Suppose we have a $\Ber(0.5)$ source that produces sequences of $n = 2$ bits.
+There are four possible source sequences: $00$, $01$, $10$, and $11$.
+We wish to compress each sequence to just $1$ bit, so our codebook has
+$M = 2$ entries and the rate is $R = \frac{1}{2}\log_2 2 = 0.5$ bits per
+source symbol.
+One natural code assigns codeword $0$ to the pair $\{00, 01\}$ and codeword $1$
+to the pair $\{10, 11\}$: the encoder simply keeps the first bit and discards
+the second.
+The decoder reconstructs $00$ from codeword $0$ and $11$ from codeword $1$.
+What distortion does this code achieve?
+Under Hamming distortion (which counts the fraction of disagreeing positions),
+the four source sequences yield distortions
+$d(00, 00) = 0$, $d(01, 00) = 1/2$, $d(10, 11) = 1/2$, and $d(11, 11) = 0$.
+Since the source is fair, each sequence is equally likely, so the average
+distortion is $(0 + 1/2 + 1/2 + 0)/4 = 1/4$.
+We have thus constructed a concrete code operating at rate $R = 0.5$ and
+distortion $D = 0.25$.
+
+Is this the best we can do at rate $0.5$?
+Shannon's rate-distortion theory will tell us the answer.
+For a $\Ber(0.5)$ source, the rate-distortion function is
+$R(D) = 1 - H(D)$, which gives $R(0.25) \approx 0.189$ bits per symbol.
+Since our code operates at rate $0.5$, well above $0.189$, there is
+considerable room for improvement, but only in the limit of large block lengths.
+For $n = 2$, we cannot do much better.
+This gap between what a short code achieves and what the Shannon limit promises
+is precisely what finite block length theory quantifies.
+
 Over the past two decades, a precise answer to this question has emerged through
 the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u}~\cite{kontoyiannis2014},
 Kostina and Verd\'{u}~\cite{kostina2012}, and others.
