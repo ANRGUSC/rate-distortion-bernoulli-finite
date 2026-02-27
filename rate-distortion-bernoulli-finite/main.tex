@@ -1536,6 +1536,42 @@ probability translates into a Gaussian tail probability.
 The $\Qinv(\varepsilon)$ factor converts the target probability $\varepsilon$
 into the number of standard deviations we must accommodate.
 
+Figure~\ref{fig:clt_histogram} illustrates this Gaussian approximation
+concretely for a $\Ber(0.3)$ source with $n = 6$ and
+$\varepsilon = 0.05$.
+For each block of $n = 6$ symbols, the number of ones $k$ ranges from $0$
+to $6$, and the per-symbol average $d$-tilted information
+$\frac{1}{n}\sum_{i=1}^{n} \jmath_X(X_i, D)$ takes the value
+$\frac{k\,\jmath_X(1, D) + (n-k)\,\jmath_X(0, D)}{n}$
+with probability $\binom{n}{k}\, p^k (1-p)^{n-k}$.
+The blue bars show this exact discrete distribution, while the red curve
+shows the Gaussian density $\mathcal{N}\!\bigl(\RD,\, V(D)/n\bigr)$.
+The dashed black line marks the Shannon limit $\RD$, and the
+dash-dotted green line marks $R(n, D, \varepsilon)$: the minimum rate at
+which the Gaussian tail probability (shaded) does not exceed $\varepsilon$.
+Comparing the two panels reveals the effect of the distortion target:
+at $D = 0.1$ (left), both $\RD$ and $V(D)$ are larger, so the distribution
+is wider and the gap $R(n, D, \varepsilon) - \RD$ is more pronounced;
+at $D = 0.2$ (right), the distribution is more concentrated and the
+finite block length penalty is smaller.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/clt_histogram.pdf}
+    \caption{Gaussian approximation of the per-symbol $d$-tilted information
+    for a $\Ber(0.3)$ source with $n = 6$ and $\varepsilon = 0.05$, at two
+    distortion levels.
+    Blue bars show the exact PMF over the $n+1 = 7$ possible values;
+    the red curve is the Gaussian $\mathcal{N}(\RD,\, V(D)/n)$.
+    The dashed line is $\RD$ and the dash-dotted line is $R(n, D, \varepsilon)$;
+    the shaded tail corresponds to the excess-distortion probability
+    $\varepsilon$.
+    At $D = 0.1$ (left), higher dispersion produces a wider distribution
+    and a larger finite block length penalty; at $D = 0.2$ (right), the
+    distribution is tighter and the penalty smaller.}
+    \label{fig:clt_histogram}
+\end{figure}
+
 From an engineering standpoint, Theorem~\ref{thm:normal_approx} provides a
 practical design rule: to operate within rate $\RD + \Delta R$ of the Shannon
 limit with excess-distortion probability $\varepsilon$, we need a block length of
@@ -1594,7 +1630,7 @@ publicly available at:\\
 
 \subsection{Computational Tools and Figures}
 
-We provide five Python scripts in the \texttt{scripts/} directory:
+We provide six Python scripts in the \texttt{scripts/} directory:
 \begin{itemize}
     \item \texttt{rate\_distortion.py}: Computes and plots the binary entropy
           function (Figure~\ref{fig:binary_entropy}) and rate-distortion curves
@@ -1608,6 +1644,11 @@ We provide five Python scripts in the \texttt{scripts/} directory:
           (Figure~\ref{fig:dispersion}).
           This script also runs a numerical verification that
           $\E[\jmath_X(X,D)] = \RD$ to machine precision.
+    \item \texttt{clt\_histogram.py}: Illustrates the CLT approximation
+          underlying the normal approximation by plotting the exact PMF
+          of the per-symbol $d$-tilted information alongside the Gaussian
+          density, for two distortion levels
+          (Figure~\ref{fig:clt_histogram}).
     \item \texttt{finite\_blocklength.py}: Computes the normal approximation,
           achievability/converse bounds (Figure~\ref{fig:finite_blocklength}),
           and the rate versus block length curves

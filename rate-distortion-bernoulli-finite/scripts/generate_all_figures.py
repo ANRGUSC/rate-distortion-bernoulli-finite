@@ -33,7 +33,7 @@ def main():
     print("=" * 60)
 
     # --- rate_distortion.py ---
-    print("\n[1/4] rate_distortion.py")
+    print("\n[1/5] rate_distortion.py")
     from rate_distortion import plot_binary_entropy, plot_rate_distortion_curves
     plot_binary_entropy()
     plt.close("all")
@@ -41,7 +41,7 @@ def main():
     plt.close("all")
 
     # --- blahut_arimoto.py ---
-    print("\n[2/4] blahut_arimoto.py")
+    print("\n[2/5] blahut_arimoto.py")
     from blahut_arimoto import plot_convergence, plot_ba_vs_closedform
     plot_convergence()
     plt.close("all")
@@ -49,7 +49,7 @@ def main():
     plt.close("all")
 
     # --- dispersion.py ---
-    print("\n[3/4] dispersion.py")
+    print("\n[3/5] dispersion.py")
     from dispersion import plot_dtilted_info, plot_dispersion_curves, verify
     verify()
     plot_dtilted_info()
@@ -57,8 +57,14 @@ def main():
     plot_dispersion_curves()
     plt.close("all")
 
+    # --- clt_histogram.py ---
+    print("\n[4/5] clt_histogram.py")
+    from clt_histogram import plot_clt_histogram
+    plot_clt_histogram()
+    plt.close("all")
+
     # --- finite_blocklength.py ---
-    print("\n[4/4] finite_blocklength.py")
+    print("\n[5/5] finite_blocklength.py")
     from finite_blocklength import (
         plot_rate_vs_blocklength,
         plot_finite_blocklength_bounds,

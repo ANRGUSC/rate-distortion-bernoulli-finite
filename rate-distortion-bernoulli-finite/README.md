@@ -11,12 +11,13 @@ main.tex                        LaTeX source for the tutorial
 main.pdf                        Compiled PDF (24 pages)
 references.bib                  Bibliography (12 references)
 LICENSE.md                      PolyForm Noncommercial 1.0.0
-figures/                        Pre-generated figure PDFs (9 figures)
+figures/                        Pre-generated figure PDFs (10 figures)
 scripts/
   rate_distortion.py            Binary entropy, R(D) curves (Figs 1-2)
   blahut_arimoto.py             Blahut-Arimoto algorithm (Figs 3-4)
   dispersion.py                 d-tilted information, V(D) (Figs 5-6)
-  finite_blocklength.py         Normal approximation, finite-n bounds (Figs 7-9)
+  clt_histogram.py              CLT histogram of d-tilted information (Fig 7)
+  finite_blocklength.py         Normal approximation, finite-n bounds (Figs 8-10)
   generate_all_figures.py       Master script to regenerate all figures
 requirements.txt                Python dependencies (numpy, scipy, matplotlib)
 ```
@@ -29,7 +30,7 @@ requirements.txt                Python dependencies (numpy, scipy, matplotlib)
 4. **The Rate-Distortion Function for the Bernoulli Source** -- Two derivations of the optimal test channel (Lagrangian/KKT and entropy maximization); closed-form *R*(*D*) = *H*(*p*) - *H*(*D*).
 5. **The Blahut-Arimoto Algorithm** -- Iterative computation with convergence demonstration.
 6. **Beyond the Asymptotic Limit: Finite Block Length** -- *d*-tilted information, dispersion *V*(*D*), the normal approximation *R*(*n*, *D*, *eps*) = *R*(*D*) + sqrt(*V*(*D*)/*n*) *Q*^{-1}(*eps*) + *O*(log *n* / *n*).
-7. **Numerical Explorations** -- Nine figures with cross-references to the generating scripts.
+7. **Numerical Explorations** -- Ten figures with cross-references to the generating scripts.
 8. **Conclusion** -- Summary of key results.
 
 ## Generating Figures
@@ -39,7 +40,7 @@ pip install -r requirements.txt
 python scripts/generate_all_figures.py
 ```
 
-All nine figures are saved as PDF in the `figures/` directory. The scripts also run internal verification checks (e.g., confirming E[j_X(X, D)] = R(D) to machine precision).
+All ten figures are saved as PDF in the `figures/` directory. The scripts also run internal verification checks (e.g., confirming E[j_X(X, D)] = R(D) to machine precision).
 
 ## Building the PDF
 
