@@ -47,7 +47,7 @@
 % ---- Title ----
 \title{\LARGE Finite Block Length Rate-Distortion Theory for the\\Bernoulli Source with Hamming Distortion: A Tutorial}
 \author{Bhaskar Krishnamachari}
-\date{February 26, 2026}
+\date{February 27, 2026}
 
 \begin{document}
 \maketitle
@@ -135,14 +135,16 @@ Since our simple code operates at rate $0.5$, well above the Shannon limit of
 $0.189$, there is considerable room for improvement, but only in the limit of
 large block lengths.
 For $n = 2$, it turns out, we cannot do better.
-To see why, observe that any code with $M = 2$ codewords must partition the four
-source sequences into two groups of two, mapping each group to a single
-reconstruction.
-Within each group, one sequence matches the reconstruction perfectly
-(distortion~$0$) and the other disagrees in at least one of the two positions
-(distortion at least~$1/2$).
-Since all four sequences are equally likely, the average distortion is at least
-$(0 + 1/2 + 0 + 1/2)/4 = 1/4$, which is exactly what our code achieves.
+To see why, note that any code with $M = 2$ assigns each of the four source
+sequences to one of two reconstructions $\hat{x}_1, \hat{x}_2 \in \{0,1\}^2$
+(which need not belong to the assigned group).
+In $\{0,1\}^2$, each reconstruction can match at most one sequence exactly
+(itself, at Hamming distance~$0$); every other sequence has Hamming
+distance at least~$1$, contributing per-symbol distortion at least~$1/2$.
+With only two reconstructions, at most two of the four sequences can achieve
+distortion~$0$, so at least two sequences contribute distortion~$\geq 1/2$.
+Since all four are equally likely, the average distortion is at least
+$(0 + 0 + 1/2 + 1/2)/4 = 1/4$, which is exactly what our code achieves.
 The gap between this finite-$n$ optimum of $D = 0.25$ at rate $0.5$ and the
 Shannon limit of $R(0.25) \approx 0.189$ at the same distortion illustrates a
 fundamental phenomenon: short codes pay a rate penalty compared to the
@@ -150,7 +152,8 @@ asymptotic limit.
 Quantifying this penalty precisely is the goal of finite block length theory.
 
 Over the past two decades, a precise answer to this question has emerged through
-the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u}~\cite{kontoyiannis2014},
+the work of Strassen~\cite{strassen1962},
+Ingber and Kochman~\cite{ingber2011},
 Kostina and Verd\'{u}~\cite{kostina2012}, and others.
 To state their result, we need two preliminary ideas.
 
@@ -439,14 +442,15 @@ We can now state the central question of rate-distortion theory:
 encoder-decoder pairs achieving average distortion at most $D$?}
 \medskip
 
-Shannon's remarkable insight was that this minimum rate is given by a ``single-letter''
-optimization (meaning it involves only the distribution of one source symbol and one
-reproduction symbol, not the full length-$n$ sequences), independent of the block
-length~\cite{shannon1959}.
+Shannon's remarkable insight was that, in the limit $n \to \infty$, this minimum
+rate converges to a ``single-letter'' quantity $R(D)$---an optimization involving
+only the distribution of one source symbol and one reproduction symbol, not the
+full length-$n$ sequences~\cite{shannon1959}.
 We do not need to search over all possible encoder-decoder pairs of all possible
-block lengths.
-Instead, the answer depends only on the source distribution $p_X$ and the
-distortion measure $d$.
+block lengths: the \emph{asymptotic} answer depends only on the source
+distribution $p_X$ and the distortion measure $d$.
+(For any finite $n$, the actual minimum rate exceeds $R(D)$; quantifying this
+gap is the subject of Section~\ref{sec:finite_blocklength}.)
 
 % ---- 3.4 ----
 \subsection{The Test Channel and the Rate-Distortion Function}
@@ -579,15 +583,21 @@ information $I(X; \hat{X})$ subject to $(1-p)\alpha + p\beta \leq D$.
 \subsection{The Optimal Test Channel}
 \label{subsec:optimal_test_channel}
 
+We present two derivations of the optimal test channel.
+The first uses the classical Lagrangian/KKT machinery, which exposes the
+algebraic structure of the solution.
+The second uses an entropy-maximization argument that provides complementary
+geometric intuition.
+
+\subsubsection*{Derivation 1: Lagrangian and KKT Conditions}
+
 To solve the optimization~(\ref{eq:rd_bernoulli_opt}), we form the Lagrangian
 \begin{equation}
 \label{eq:lagrangian}
 \mathcal{L} = I(X; \hat{X}) + \lambda \bigl(\E[d(X, \hat{X})] - D\bigr),
 \end{equation}
 where $\lambda \geq 0$ is the Lagrange multiplier.
-We now work through the Karush-Kuhn-Tucker (KKT) conditions step by step
-to show that the optimal test channel is a binary symmetric channel with
-crossover probability~$D$.
+We work through the Karush-Kuhn-Tucker (KKT) conditions step by step.
 
 \smallskip
 \noindent\textbf{Step 1: Expand the Lagrangian.}
@@ -621,14 +631,11 @@ $\partial p_{\hat{X}}(0)/\partial\alpha = -(1-p)$ and
 $\partial p_{\hat{X}}(1)/\partial\alpha = (1-p)$, gives (after simplification)
 \[
 \frac{\partial I}{\partial \alpha}
-= (1-p)\log_2\frac{\alpha(1-\alpha)^{-1}}{p_{\hat{X}}(1)\,p_{\hat{X}}(0)^{-1}}
 = (1-p)\log_2\frac{\alpha\, p_{\hat{X}}(0)}{(1-\alpha)\,p_{\hat{X}}(1)}.
 \]
 Setting $\partial\mathcal{L}/\partial\alpha = 0$ yields
 \begin{equation}
 \label{eq:kkt_alpha}
-(1-p)\log_2\frac{\alpha\, p_{\hat{X}}(0)}{(1-\alpha)\,p_{\hat{X}}(1)} + \lambda(1-p) = 0
-\quad\Longrightarrow\quad
 \log_2\frac{\alpha\, p_{\hat{X}}(0)}{(1-\alpha)\,p_{\hat{X}}(1)} = -\lambda.
 \end{equation}
 By an identical calculation with respect to $\beta$:
@@ -638,91 +645,260 @@ By an identical calculation with respect to $\beta$:
 \end{equation}
 
 \smallskip
-\noindent\textbf{Step 3: Show $\alpha = \beta$.}
-From~(\ref{eq:kkt_alpha}) and~(\ref{eq:kkt_beta}), we have
+\noindent\textbf{Step 3: Recognize the exponential (Gibbs) form.}
+Equation~(\ref{eq:kkt_alpha}) says
+$\alpha/(1-\alpha) = 2^{-\lambda}\,p_{\hat{X}}(1)/p_{\hat{X}}(0)$.
+Since $\alpha = p_{\hat{X}|X}(1|0)$ and $1-\alpha = p_{\hat{X}|X}(0|0)$,
+this means
 \[
-\frac{\alpha}{1-\alpha}\cdot\frac{p_{\hat{X}}(0)}{p_{\hat{X}}(1)} = 2^{-\lambda}
-\qquad\text{and}\qquad
-\frac{1-\beta}{\beta}\cdot\frac{p_{\hat{X}}(0)}{p_{\hat{X}}(1)} = 2^{\lambda}.
+\frac{p_{\hat{X}|X}(1|0)}{p_{\hat{X}|X}(0|0)}
+= \frac{p_{\hat{X}}(1)}{p_{\hat{X}}(0)}\cdot 2^{-\lambda}.
 \]
-Multiplying these two equations together, the factors of
-$p_{\hat{X}}(0)/p_{\hat{X}}(1)$ cancel and we obtain
-\[
-\frac{\alpha(1-\beta)}{(1-\alpha)\beta} = 1,
-\]
-which implies $\alpha(1-\beta) = \beta(1-\alpha)$, and therefore $\alpha = \beta$.
+For source symbol $x = 0$, the distortions are $d(0,0) = 0$ and $d(0,1) = 1$,
+so the factor $2^{-\lambda}$ acts as an exponential penalty on the mismatched
+reproduction.
+Similarly,~(\ref{eq:kkt_beta}) gives
+$p_{\hat{X}|X}(0|1)/p_{\hat{X}|X}(1|1) = (p_{\hat{X}}(0)/p_{\hat{X}}(1))
+\cdot 2^{-\lambda}$,
+again penalizing the mismatch $d(1,0) = 1$.
+Both conditions are unified by the \emph{Gibbs form}:
+\begin{equation}
+\label{eq:gibbs_form}
+p^*_{\hat{X}|X}(\hat{x}|x)
+= \frac{Q^*(\hat{x})\, 2^{-\lambda\, d(x,\hat{x})}}{Z(x)},
+\end{equation}
+where $Q^*(\hat{x}) = p^*_{\hat{X}}(\hat{x})$ is the optimal reproduction
+distribution (which the test channel must be self-consistent with) and
+$Z(x) = \sum_{\hat{x}} Q^*(\hat{x})\,2^{-\lambda\,d(x,\hat{x})}$ is the
+normalizing constant ensuring $\sum_{\hat{x}} p^*_{\hat{X}|X}(\hat{x}|x) = 1$.
+
+The Gibbs form has a natural interpretation: the optimal test channel takes
+the reproduction distribution $Q^*$ and \emph{reweights} each reproduction symbol
+$\hat{x}$ by an exponential factor $2^{-\lambda\,d(x,\hat{x})}$.
+Symbols close to $x$ (low distortion) keep their weight, while symbols far
+from $x$ (high distortion) are exponentially suppressed.
+The Lagrange multiplier $\lambda$ controls the severity of this penalty:
+larger $\lambda$ (corresponding to tighter distortion constraints) produces
+a more concentrated channel.
 
 \smallskip
-\noindent\textbf{Step 4: Complementary slackness and primal feasibility.}
-The KKT conditions require \emph{dual feasibility} ($\lambda \geq 0$) and
-\emph{complementary slackness}:
+\noindent\textbf{Step 4: Identify the backward channel.}
+The Gibbs form~(\ref{eq:gibbs_form}) reveals a remarkable structure when we
+look at the \emph{backward} (reverse) channel via Bayes' rule:
+\[
+p^*_{X|\hat{X}}(x|\hat{x})
+= \frac{p_X(x)\,p^*_{\hat{X}|X}(\hat{x}|x)}{Q^*(\hat{x})}
+= \frac{p_X(x)\, 2^{-\lambda\, d(x,\hat{x})}}{Z(x)},
+\]
+where $Z(x) = \sum_{\hat{x}} Q^*(\hat{x})\,2^{-\lambda\,d(x,\hat{x})}$ is
+the same forward normalizer from~(\ref{eq:gibbs_form}).
+A crucial subtlety: $Z(x)$ depends on the \emph{source} symbol $x$, not the
+reproduction $\hat{x}$.
+For Hamming distortion, $d(x,\hat{x}) = 0$ when $x = \hat{x}$ and $1$ when
+$x \neq \hat{x}$, so the two normalizers are
+\[
+Z(0) = Q^*(0) + Q^*(1)\cdot 2^{-\lambda},\qquad
+Z(1) = Q^*(0)\cdot 2^{-\lambda} + Q^*(1).
+\]
+Writing out all four backward-channel entries, grouped by source symbol
+(entries sharing the same $x$ share the same denominator):
+\begin{alignat*}{2}
+&\text{Source }x=0:\quad
+& p^*_{X|\hat{X}}(0|0) &= \frac{1-p}{Z(0)},\qquad
+  p^*_{X|\hat{X}}(0|1) = \frac{(1-p)\cdot 2^{-\lambda}}{Z(0)},\\[4pt]
+&\text{Source }x=1:\quad
+& p^*_{X|\hat{X}}(1|0) &= \frac{p\cdot 2^{-\lambda}}{Z(1)},\qquad
+  p^*_{X|\hat{X}}(1|1) = \frac{p}{Z(1)}.
+\end{alignat*}
+
+\smallskip
+\noindent\textbf{Step 5: Complementary slackness and solving for $\lambda$.}
+The KKT conditions require \emph{complementary slackness}:
 $\lambda\bigl[(1-p)\alpha + p\beta - D\bigr] = 0$.
-For $0 < D < \min(p,1-p)$ the rate-distortion function is strictly positive,
-so the constraint must be active (otherwise we could reduce the rate further).
-This means $\lambda > 0$ and complementary slackness forces
+For $0 < D < \min(p, 1-p)$ the rate is strictly positive, so the distortion
+constraint must be active ($\lambda > 0$), giving
+$\E[d(X,\hat{X})] = D$.
+
+We now determine $\lambda$ by requiring the backward channel to be a BSC($D$).
+Consider the two entries with source symbol $x = 0$ (which share the
+denominator $Z(0)$).
+Setting $p^*_{X|\hat{X}}(0|0) = 1-D$ gives
 \[
-(1-p)\alpha + p\beta = D.
+Z(0) = \frac{1-p}{1-D}.
 \]
-Since $\alpha = \beta$ from Step~3, this becomes
-$\alpha\bigl[(1-p) + p\bigr] = \alpha = D$.
-We conclude $\alpha^* = \beta^* = D$.
+Then requiring $p^*_{X|\hat{X}}(0|1) = D$:
+\[
+\frac{(1-p)\cdot 2^{-\lambda}}{Z(0)}
+= \frac{(1-p)\cdot 2^{-\lambda}}{(1-p)/(1-D)}
+= (1-D)\cdot 2^{-\lambda} = D,
+\]
+which gives $2^{-\lambda} = D/(1-D)$, i.e.,
+\begin{equation}
+\label{eq:lambda_kkt}
+\lambda = \log_2\frac{1-D}{D}.
+\end{equation}
+One can verify the $x = 1$ entries give the same result:
+$p^*_{X|\hat{X}}(1|1) = 1-D$ forces $Z(1) = p/(1-D)$, and then
+$p^*_{X|\hat{X}}(1|0) = p\cdot 2^{-\lambda}/Z(1) = (1-D)\cdot D/(1-D) = D$.\;\checkmark
+
+Therefore the backward channel is a BSC($D$):
+\begin{equation}
+\label{eq:backward_channel}
+p^*_{X|\hat{X}}(x|\hat{x}) =
+\begin{cases}
+1-D, & \text{if } x = \hat{x},\\
+D, & \text{if } x \neq \hat{x}.
+\end{cases}
+\end{equation}
 
 \smallskip
-\noindent\textbf{Result.}
-The optimal test channel is a \emph{binary symmetric channel} (BSC) with
-crossover probability equal to the target distortion:
+\noindent\textbf{Step 6: Derive the reproduction distribution and forward channel.}
+From the backward channel BSC($D$) and Bayes' rule, the reproduction
+distribution must satisfy
+$p_X(x) = \sum_{\hat{x}} Q^*(\hat{x})\,p^*_{X|\hat{X}}(x|\hat{x})$.
+For $x = 1$: $p = Q^*(1)(1-D) + Q^*(0)D$.
+Solving:
+\begin{equation}
+\label{eq:Qstar}
+Q^*(1) = \frac{p - D}{1 - 2D}, \qquad
+Q^*(0) = \frac{1 - p - D}{1 - 2D}.
+\end{equation}
+(Both are positive when $D < \min(p, 1-p)$, which is the interesting regime.)
+The forward channel $p^*_{\hat{X}|X}$ is recovered from Bayes' rule,
+$p^*_{\hat{X}|X}(\hat{x}|x) = Q^*(\hat{x})\,p^*_{X|\hat{X}}(x|\hat{x})
+/p_X(x)$:
 \begin{equation}
 \label{eq:optimal_test_channel}
 p^*_{\hat{X}|X} =
 \begin{pmatrix}
-1 - D & D \\
-D & 1 - D
+\frac{Q^*(0)(1-D)}{1-p} & \frac{Q^*(1)\,D}{1-p} \\[6pt]
+\frac{Q^*(0)\,D}{p} & \frac{Q^*(1)(1-D)}{p}
 \end{pmatrix}.
 \end{equation}
-This makes intuitive sense: the Hamming distortion treats errors symmetrically
-(a $0 \to 1$ flip costs the same as a $1 \to 0$ flip), so the optimal test
-channel treats both source symbols symmetrically as well.
-Any asymmetric channel (with $\alpha \neq \beta$) would waste distortion budget
-by allocating more error probability to one symbol than the other, without any
-compensating reduction in mutual information.
+One can verify that each row sums to one.
+
+\begin{remark}
+When $p = 1/2$, we have $Q^*(0) = Q^*(1) = 1/2$, and the forward
+channel~(\ref{eq:optimal_test_channel}) reduces to a BSC($D$) ---
+the symmetric case that many textbooks present as the general answer.
+For $p \neq 1/2$, however, the forward channel is \emph{asymmetric}:
+the probability of flipping a $0$ to a $1$ differs from the probability of
+flipping a $1$ to a $0$.
+The key structural insight is that it is the \emph{backward} channel that is
+symmetric, not the forward channel.
+\end{remark}
+
+The optimal reproduction distribution $Q^*$ was determined
+in~(\ref{eq:Qstar}):
+\begin{align}
+Q^*(0) &= \frac{1 - p - D}{1 - 2D}, \label{eq:repro_dist_0}\\
+Q^*(1) &= \frac{p - D}{1 - 2D}. \label{eq:repro_dist_1}
+\end{align}
+Note that $Q^*(0) + Q^*(1) = 1$, as expected, and $Q^*(1) = p$ only when
+$p = 1/2$.
+We will use this reproduction distribution again in
+Section~\ref{subsec:dtilted} when computing the $d$-tilted information.
 
 The corresponding Lagrange multiplier is
 \begin{equation}
 \label{eq:lambda_star}
-\lambda^* = \ln \frac{1-D}{D},
+\lambda^* = \log_2 \frac{1-D}{D},
 \end{equation}
-where $\ln$ denotes the natural logarithm.
-This value is not a coincidence: in any constrained optimization, the Lagrange
+which is the same value derived in~(\ref{eq:lambda_kkt}).
+This is not a coincidence: in any constrained optimization, the Lagrange
 multiplier equals the sensitivity of the objective to the constraint.
 Here, $\lambda^*$ tells us how much the minimum rate $\RD$ changes when we relax
 the distortion budget by a small amount~$dD$.
 Formally, $\lambda^* = -R'(D)$, which we can verify directly:
-$R'(D) = -H'(D) = \log_2\frac{D}{1-D} = -\frac{1}{\ln 2}\ln\frac{1-D}{D}$,
-so $-R'(D) = \frac{\lambda^*}{\ln 2}$ in bits (or $\lambda^*$ in nats).
+$R'(D) = -H'(D) = \log_2\frac{D}{1-D}$,
+so $-R'(D) = \log_2\frac{1-D}{D} = \lambda^*$.
 The multiplier is large when $D$ is small (the rate curve is steep, so each
 additional bit of distortion saves many bits of rate) and approaches zero as
 $D \to \min(p,1-p)$ (the curve flattens near zero rate).
+
+\subsubsection*{Derivation 2: Entropy Maximization}
+
+We now present a second, more direct derivation that bypasses the Lagrangian
+machinery entirely.
+It relies on three ideas, each of which we explain carefully.
+
+\smallskip
+\noindent\textbf{Idea 1: Minimizing mutual information $=$ maximizing
+conditional entropy.}
+Recall from~(\ref{eq:mi_entropy}) that $I(X;\hat{X}) = H(X) - H(X|\hat{X})$.
+Since the source entropy $H(X) = H(p)$ is fixed (it does not depend on the
+test channel), minimizing $I(X;\hat{X})$ over the test channel is the same as
+maximizing $H(X|\hat{X})$.
+Intuitively, $H(X|\hat{X})$ measures how much uncertainty about $X$ remains
+\emph{after} seeing $\hat{X}$.
+A good lossy code should leave as much residual uncertainty as possible
+(retaining only the information needed to meet the distortion target), thereby
+minimizing the rate.
+
+\smallskip
+\noindent\textbf{Idea 2: Relating conditional entropy to the error variable.}
+Define the \emph{error variable} $Z = X \oplus \hat{X}$ (addition modulo~$2$),
+so $Z = 1$ when the source and reconstruction disagree and $Z = 0$ otherwise.
+Since $X$ is completely determined by the pair $(\hat{X}, Z)$ via $X = \hat{X}
+\oplus Z$, knowing $\hat{X}$ and $Z$ tells you $X$ exactly.
+By the chain rule of entropy, $H(X|\hat{X}) = H(Z|\hat{X})$:
+the residual uncertainty about $X$ given $\hat{X}$ is the same as the
+uncertainty about the error pattern $Z$ given $\hat{X}$.
+
+\smallskip
+\noindent\textbf{Idea 3: Two upper bounds on $H(Z|\hat{X})$.}
+\begin{align}
+H(X|\hat{X}) = H(Z|\hat{X})
+&\leq H(Z) \label{eq:cond_reduces}\\
+&\leq H(D). \label{eq:maxent}
+\end{align}
+\emph{Why does~(\ref{eq:cond_reduces}) hold?}
+This is the general fact that ``conditioning reduces entropy'': knowing
+$\hat{X}$ can only help (or not hurt) in predicting $Z$, so
+$H(Z|\hat{X}) \leq H(Z)$.
+Equality holds if and only if $Z$ is independent of $\hat{X}$ --- that is,
+knowing the reconstruction tells you nothing about the error pattern.
+
+\emph{Why does~(\ref{eq:maxent}) hold?}
+Since $Z$ is a binary random variable with $\E[Z] = \E[d(X,\hat{X})] \leq D$,
+the entropy of $Z$ is at most $H(D)$.
+This is because, among all binary random variables with mean at most $D$,
+the $\Ber(D)$ distribution has the maximum entropy.
+(This is a special case of the general principle that the maximum-entropy
+distribution subject to a mean constraint is exponential; for binary variables,
+it is Bernoulli.)
+
+\smallskip
+\noindent\textbf{Achieving both bounds simultaneously.}
+Both inequalities become equalities when:
+\begin{enumerate}
+    \item $Z$ is independent of $\hat{X}$ (so that $H(Z|\hat{X}) = H(Z)$), and
+    \item $Z \sim \Ber(D)$ (so that $H(Z) = H(D)$ and $\E[Z] = D$).
+\end{enumerate}
+In other words, the optimal scheme has the error $Z \sim \Ber(D)$ acting
+independently of the reconstruction $\hat{X}$.
+Since $X = \hat{X} \oplus Z$, this means the backward channel
+$p_{X|\hat{X}}$ is a BSC with crossover probability $D$, exactly
+as~(\ref{eq:backward_channel}).
+The reproduction distribution $Q^*$ and forward channel then follow from
+Bayes' rule, exactly as in Steps~5--6 of Derivation~1.
 
 % ---- 4.3 ----
 \subsection{The Closed-Form Result}
 \label{subsec:rd_closedform}
 
-Having identified the optimal test channel as BSC($D$), we can now compute the
-rate-distortion function in closed form.
-When $X \sim \Ber(p)$ is passed through a BSC($D$), the output
-$\hat{X} \sim \Ber(p * D)$, where $p * D = p(1-D) + (1-p)D$ denotes the
-\emph{binary convolution}.
-The mutual information evaluates to
-\begin{equation}
-I(X; \hat{X}) = H(\hat{X}) - H(\hat{X}|X) = H(p * D) - H(D).
-\end{equation}
-However, since we are minimizing over $D$ at the constraint boundary, and
-$H(p * D) = \Hp$ is not quite right; let us be precise.
-
-The mutual information through a BSC($D$) with $\Ber(p)$ input is
-\begin{equation}
-I(X; \hat{X}) = H(p * D) - H(D).
-\end{equation}
+Having identified that the optimal backward channel is BSC($D$), the
+rate-distortion function follows immediately.
+From the entropy-maximization viewpoint (Derivation~2 of
+Section~\ref{subsec:optimal_test_channel}), the maximum conditional entropy is
+$H(X|\hat{X}) = H(D)$ (achieved when $Z \sim \Ber(D)$ is independent of
+$\hat{X}$), so
+\[
+\RD = H(p) - \max H(X|\hat{X}) = H(p) - H(D).
+\]
+Equivalently, from the Lagrangian viewpoint (Derivation~1), $I(X;\hat{X})
+= H(X) - H(X|\hat{X}) = H(p) - H(D)$ when evaluated at the optimal test
+channel, since the backward BSC($D$) gives $H(X|\hat{X}) = H(D)$.
 When $D \leq \min(p, 1-p)$, the distortion constraint is active and the
 rate-distortion function is
 \begin{equation}
@@ -967,10 +1143,11 @@ recovers the exact rate-distortion function.
 
 The algorithm was independently proposed by Blahut~\cite{blahut1972} and
 Arimoto~\cite{arimoto1972} in 1972.
-Blahut's formulation emphasized the Lagrangian dual structure, while Arimoto's
-formulation was rooted in information geometry.
-Csisz\'{a}r~\cite{csiszar1974} provided a rigorous convergence proof based on
-alternating minimization of a divergence functional.
+Blahut's formulation emphasized the Lagrangian dual structure, while Arimoto
+approached the problem through an iterative projection method.
+Csisz\'{a}r~\cite{csiszar1974} unified and extended both approaches using
+his theory of $I$-divergence, establishing the alternating minimization
+interpretation that clarifies why the iterations converge.
 The Blahut-Arimoto algorithm remains the standard computational tool for
 rate-distortion functions and channel capacities in information theory.
 
@@ -1091,19 +1268,28 @@ The central single-letter quantity in the finite block length analysis is the
 \emph{$d$-tilted information}, introduced by Kostina and
 Verd\'{u}~\cite{kostina2012}.
 
-\begin{definition}[$d$-Tilted Information]
+\begin{definition}[$d$-Tilted Information {\cite{kostina2012}}]
 \label{def:dtilted}
 For a source $X$ with distribution $p_X$, distortion measure $d$, and target
 distortion $D$, the $d$-tilted information of a source realization $x$ is
 \begin{equation}
 \label{eq:dtilted}
-\jmath_X(x, D) = \lambda^* D + \log_2 \frac{1}{\sum_{\hat{x} \in \calXhat}
-p^*_{\hat{X}}(\hat{x})\, e^{-\lambda^* d(x, \hat{x})}},
+\jmath_X(x, D) = D_{\mathrm{KL}}\!\bigl(p^*_{\hat{X}|X}(\cdot|x) \,\big\|\, Q^*\bigr)
++ \lambda^*\!\bigl(\E[d(x,\hat{X}) \mid X = x] - D\bigr),
 \end{equation}
-where $\lambda^* = -R'(D)$ is the negative slope of the rate-distortion
-function (in nats, using the natural logarithm convention for the derivative)
-and $p^*_{\hat{X}}$ is the reproduction distribution induced by the optimal
-test channel.
+where $\lambda^* = \log_2\frac{1-D}{D}$ is the optimal Lagrange multiplier~(\ref{eq:lambda_star}),
+$Q^*$ is the optimal reproduction distribution~(\ref{eq:repro_dist_0})--(\ref{eq:repro_dist_1}),
+and $p^*_{\hat{X}|X}$ is the optimal forward channel~(\ref{eq:optimal_test_channel}).
+All quantities are measured in bits (using $\log_2$).
+Equivalently, using the Gibbs form $p^*_{\hat{X}|X}(\hat{x}|x)
+= Q^*(\hat{x})\,2^{-\lambda^* d(x,\hat{x})}/Z(x)$ with normalizing constant
+$Z(x) = \sum_{\hat{x}} Q^*(\hat{x})\,2^{-\lambda^* d(x,\hat{x})}$,
+the definition simplifies to
+\begin{equation}
+\label{eq:dtilted_bits}
+\jmath_X(x, D) = -D\log_2\frac{1-D}{D}
++ \log_2 \frac{1}{Z(x)}.
+\end{equation}
 \end{definition}
 
 The $d$-tilted information has a compelling interpretation: it measures how
@@ -1116,68 +1302,105 @@ A key property is that the expected $d$-tilted information equals the
 rate-distortion function:
 \begin{equation}
 \label{eq:dtilted_mean}
-\E[\jmath_X(X, D)] = \RD.
+\E[\jmath_X(X, D)] = \RD,
 \end{equation}
+where the expectation is over the source distribution:
+$\E[\jmath_X(X, D)] = \sum_{x} p_X(x)\,\jmath_X(x, D)
+= (1-p)\,\jmath_X(0, D) + p\,\jmath_X(1, D)$ for the Bernoulli source.
 
 \begin{proof}
-We prove this for the Bernoulli source with Hamming distortion by direct
-computation.
-Since $X \in \{0,1\}$, the expectation is simply
-\[
-\E[\jmath_X(X, D)] = (1-p)\,\jmath_X(0, D) + p\,\jmath_X(1, D).
-\]
-We evaluate each term using the definition~(\ref{eq:dtilted}) with the optimal
-quantities for the Bernoulli source: $\lambda^* = \ln\frac{1-D}{D}$,
-$p^*_{\hat{X}}(0) = (1-p)(1-D) + pD$, and
-$p^*_{\hat{X}}(1) = p(1-D) + (1-p)D$.
+We give two proofs: an explicit algebraic computation for the Bernoulli source,
+and a short information-theoretic argument that works in general.
 
 \smallskip
-\noindent\textbf{Computing $\jmath_X(0, D)$:}
-When $x = 0$, the Hamming distortion is $d(0,\hat{x}) = 0$ if $\hat{x} = 0$ and
-$d(0,\hat{x}) = 1$ if $\hat{x} = 1$.
-The sum in the denominator of~(\ref{eq:dtilted}) becomes
-\[
-\sum_{\hat{x}} p^*_{\hat{X}}(\hat{x})\, e^{-\lambda^* d(0,\hat{x})}
-= p^*_{\hat{X}}(0) \cdot 1 + p^*_{\hat{X}}(1) \cdot e^{-\lambda^*}
-= p^*_{\hat{X}}(0) + p^*_{\hat{X}}(1) \cdot \frac{D}{1-D},
-\]
-where we used $e^{-\lambda^*} = D/(1-D)$.
-Substituting the optimal reproduction distribution:
-\[
-p^*_{\hat{X}}(0) + p^*_{\hat{X}}(1)\frac{D}{1-D}
-= \bigl[(1-p)(1-D) + pD\bigr] + \bigl[p(1-D) + (1-p)D\bigr]\frac{D}{1-D}.
-\]
-Expanding and simplifying (combining terms with common factor $(1-D)$ and $D$):
-\[
-= (1-p)(1-D) + pD + pD + (1-p)\frac{D^2}{1-D}
-= (1-p)\frac{(1-D)^2 + D^2}{1-D} + 2pD.
-\]
-After further algebra, this simplifies to $1$, and therefore $\jmath_X(0, D) =
-\lambda^* D \log_2 e + \log_2 1 = \lambda^* D \log_2 e$.
+\noindent\textbf{Part A: Algebraic proof for the Bernoulli source.}
+We use the equivalent form~(\ref{eq:dtilted_bits}).
+The normalizing constant is $Z(x) = \sum_{\hat{x}} Q^*(\hat{x})\,
+2^{-\lambda^* d(x,\hat{x})}$ with $Q^*$ from~(\ref{eq:Qstar})
+and $\lambda^* = \log_2\frac{1-D}{D}$, so $2^{-\lambda^*} = \frac{D}{1-D}$.
 
-Rather than pursuing this algebra to completion (which is tedious but
-straightforward), we take a more illuminating approach.
-The general theory~\cite{kostina2012} shows that the $d$-tilted information
-can be written as
+\smallskip
+\noindent\emph{Step 1: Compute $Z(0)$ and $Z(1)$.}
+\begin{align}
+Z(0) &= Q^*(0)\cdot 1 + Q^*(1)\cdot\frac{D}{1-D}
+= \frac{Q^*(0)(1-D) + Q^*(1)\,D}{1-D}. \notag
+\end{align}
+Substituting $Q^*(0) = \frac{1-p-D}{1-2D}$ and $Q^*(1) = \frac{p-D}{1-2D}$:
+\[
+Q^*(0)(1-D) + Q^*(1)\,D
+= \frac{(1-p-D)(1-D) + (p-D)D}{1-2D}.
+\]
+Expanding the numerator:
+$(1-p-D)(1-D) + (p-D)D = (1-p)(1-D) - D(1-D) + pD - D^2
+= (1-p)(1-D) - D(1-p) = (1-p)(1-2D)$.
+Therefore
 \begin{equation}
-\label{eq:dtilted_loglikelihood}
-\jmath_X(x, D) = \log_2 \frac{p^*_{\hat{X}|X}(\hat{x}|x)}{p^*_{\hat{X}}(\hat{x})}
-\bigg|_{\text{averaged over } \hat{x}},
+\label{eq:Z0Z1}
+Z(0) = \frac{1-p}{1-D}, \qquad
+Z(1) = \frac{p}{1-D},
 \end{equation}
-where the right-hand side is the information density (log-likelihood ratio)
-between the optimal test channel output and the reproduction marginal.
-Taking the expectation over $X$ and $\hat{X}$ gives precisely the mutual
-information:
-\[
-\E[\jmath_X(X, D)] = \sum_{x,\hat{x}} p_X(x)\, p^*_{\hat{X}|X}(\hat{x}|x)\,
-\log_2 \frac{p^*_{\hat{X}|X}(\hat{x}|x)}{p^*_{\hat{X}}(\hat{x})}
-= I(X; \hat{X}^*) = \RD,
-\]
-where $I(X; \hat{X}^*)$ is the mutual information through the optimal test
-channel, which equals $\RD$ by definition.
+where $Z(1)$ follows by an identical calculation (or by the symmetry
+$Z(1) = Q^*(0)\frac{D}{1-D} + Q^*(1)$, which gives numerator $p(1-2D)$).
 
-For the Bernoulli source, we verify this numerically: the accompanying Python
-code confirms that $(1-p)\,\jmath_X(0,D) + p\,\jmath_X(1,D) = \Hp - \HD$
+\smallskip
+\noindent\emph{Step 2: Compute $\jmath_X(0,D)$ and $\jmath_X(1,D)$.}
+Plugging~(\ref{eq:Z0Z1}) into~(\ref{eq:dtilted_bits}):
+\begin{align}
+\jmath_X(0, D) &= -D\log_2\frac{1-D}{D} + \log_2\frac{1-D}{1-p},
+\label{eq:jx0_simplified}\\
+\jmath_X(1, D) &= -D\log_2\frac{1-D}{D} + \log_2\frac{1-D}{p}.
+\label{eq:jx1_simplified}
+\end{align}
+
+\smallskip
+\noindent\emph{Step 3: Compute the expectation.}
+\begin{align}
+\E[\jmath_X(X,D)]
+&= (1-p)\,\jmath_X(0,D) + p\,\jmath_X(1,D) \notag\\
+&= \underbrace{-D\log_2\frac{1-D}{D}}_{\text{common first term}}
+   + \underbrace{(1-p)\log_2\frac{1-D}{1-p} + p\log_2\frac{1-D}{p}}_{\text{weighted second terms}}.
+   \label{eq:Ej_expanded}
+\end{align}
+
+\smallskip
+\noindent\emph{Step 4: Simplify the second group.}
+Splitting the logarithms:
+\[
+(1-p)\log_2\frac{1-D}{1-p} + p\log_2\frac{1-D}{p}
+= \underbrace{\bigl[(1-p) + p\bigr]}_{=\,1}\log_2(1-D)
+  \;+\; \underbrace{\bigl[-(1-p)\log_2(1-p) - p\log_2 p\bigr]}_{=\,H(p)}.
+\]
+
+\smallskip
+\noindent\emph{Step 5: Combine all terms.}
+\begin{align}
+\E[\jmath_X(X,D)]
+&= -D\log_2\frac{1-D}{D} + \log_2(1-D) + H(p) \notag\\
+&= -D\log_2(1-D) + D\log_2 D + \log_2(1-D) + H(p) \notag\\
+&= (1-D)\log_2(1-D) + D\log_2 D + H(p) \notag\\
+&= -H(D) + H(p) = H(p) - H(D) = \RD. \qquad\square \notag
+\end{align}
+
+\smallskip
+\noindent\textbf{Part B: Information-theoretic proof (general sources).}
+From the definition~(\ref{eq:dtilted}), taking the expectation over $X$:
+\begin{align}
+\E[\jmath_X(X,D)]
+&= \E_X\!\bigl[D_{\mathrm{KL}}(p^*_{\hat{X}|X}(\cdot|X) \| Q^*)\bigr]
+   + \lambda^*\!\bigl(\E[d(X,\hat{X}^*)] - D\bigr). \notag
+\end{align}
+The first term is $\sum_x p_X(x)\,D_{\mathrm{KL}}(p^*_{\hat{X}|X}(\cdot|x) \| Q^*)
+= I(X;\hat{X}^*)$, since mutual information decomposes as the expected
+KL divergence of the conditional from the marginal.
+The second term vanishes because the optimal test channel meets the distortion
+constraint with equality: $\E[d(X,\hat{X}^*)] = D$.
+Therefore
+\[
+\E[\jmath_X(X,D)] = I(X;\hat{X}^*) = \RD. \qquad\square
+\]
+
+For the Bernoulli source, the accompanying Python code confirms that
+$(1-p)\,\jmath_X(0,D) + p\,\jmath_X(1,D) = \Hp - \HD$
 to machine precision for all tested values of $p$ and $D$.
 \end{proof}
 
@@ -1187,13 +1410,15 @@ contributions, just as the log-likelihood ratio decomposes mutual information
 in channel coding.
 
 For the $\Ber(p)$ source with Hamming distortion, the optimal reproduction
-distribution is $p^*_{\hat{X}}(0) = (1-p)(1-D) + pD$ and
-$p^*_{\hat{X}}(1) = p(1-D) + (1-p)D$, and the slope is
-$\lambda^* = \ln\frac{1-D}{D}$.
-The $d$-tilted information takes two values:
+distribution is given
+by~(\ref{eq:repro_dist_0})--(\ref{eq:repro_dist_1}), and the Lagrange
+multiplier is $\lambda^* = \log_2\frac{1-D}{D}$.
+Using the simplified normalizing constants $Z(0) = \frac{1-p}{1-D}$
+and $Z(1) = \frac{p}{1-D}$ from~(\ref{eq:Z0Z1}), the $d$-tilted information
+takes two values:
 \begin{align}
-\jmath_X(0, D) &= \log_2\frac{1-D}{D}\cdot D + \log_2 \frac{1}{p^*_{\hat{X}}(0) + p^*_{\hat{X}}(1)\frac{D}{1-D}}, \label{eq:jx0}\\
-\jmath_X(1, D) &= \log_2\frac{1-D}{D}\cdot D + \log_2 \frac{1}{p^*_{\hat{X}}(0)\frac{D}{1-D} + p^*_{\hat{X}}(1)}. \label{eq:jx1}
+\jmath_X(0, D) &= -D\log_2\frac{1-D}{D} + \log_2\frac{1-D}{1-p}, \label{eq:jx0}\\
+\jmath_X(1, D) &= -D\log_2\frac{1-D}{D} + \log_2\frac{1-D}{p}. \label{eq:jx1}
 \end{align}
 
 Figure~\ref{fig:dtilted} shows the $d$-tilted information for both source
@@ -1250,6 +1475,9 @@ Intuitively, every symbol of a fair coin is equally difficult to compress, so
 there is no variability in compression difficulty.
 This is a somewhat surprising consequence: for the fair Bernoulli source, the
 convergence to $\RD$ is faster than $O(1/\sqrt{n})$.
+When $V(D) = 0$, the normal approximation~(\ref{eq:normal_approx}) does not
+apply (it requires $V(D) > 0$); the $\sqrt{V/n}$ term vanishes and the
+$O(\log n / n)$ remainder becomes the dominant correction.
 \end{remark}
 
 Figure~\ref{fig:dispersion} shows $V(D)$ as a function of $D$ for several
@@ -1325,35 +1553,6 @@ bound, and normal approximation for a $\Ber(0.3)$ source.
 \end{figure}
 
 % ---- 6.6 ----
-\subsection{The Tilting Distribution}
-\label{subsec:tilting}
-
-A deeper understanding of the finite block length result comes from the
-\emph{tilting distribution}, which plays a central role in the converse proof.
-
-\begin{definition}[Tilting Distribution]
-The tilting distribution at distortion level $D$ is
-\begin{equation}
-\label{eq:tilting}
-Q_D(x) = \frac{p_X(x)\, e^{\lambda^* \jmath_X(x, D)}}{\E\bigl[e^{\lambda^* \jmath_X(X, D)}\bigr]},
-\end{equation}
-where $\lambda^*$ is the optimal Lagrange multiplier.
-\end{definition}
-
-The tilting distribution is an exponential reweighting of the source
-distribution.
-It assigns higher probability to source symbols that are ``harder'' to compress
-(those with larger $d$-tilted information).
-In the converse proof, $Q_D$ represents the ``worst-case'' source distribution:
-if we could not compress well under the original source, we certainly cannot
-compress well under a distribution that emphasizes the difficult symbols.
-
-For the $\Ber(p)$ source, the tilting distribution is another Bernoulli
-distribution with a modified parameter.
-This connection to exponential families is a recurring theme in information
-theory and large deviations.
-
-% ---- 6.7 ----
 \subsection{Historical Note}
 \label{subsec:fbl_history}
 
@@ -1377,26 +1576,40 @@ second-order information theory.
 \section{Numerical Explorations}
 \label{sec:numerical}
 
-In this section, we present comprehensive numerical results that illustrate and
-validate the theoretical developments of the preceding sections.
-All figures are generated by the accompanying Python scripts in the
-\texttt{scripts/} directory.
+Every figure in this tutorial was generated programmatically by accompanying
+Python scripts.
+The scripts, along with the \LaTeX{} source and all generated figures, are
+publicly available at:\\
+\texttt{https://github.com/anrgusc/rate-distortion-bernoulli-finite}.
 
-\subsection{Overview of Computational Tools}
+\subsection{Computational Tools and Figures}
 
-We provide five Python scripts:
+We provide five Python scripts in the \texttt{scripts/} directory:
 \begin{itemize}
     \item \texttt{rate\_distortion.py}: Computes and plots the binary entropy
-          function and rate-distortion curves.
+          function (Figure~\ref{fig:binary_entropy}) and rate-distortion curves
+          (Figure~\ref{fig:rd_curves}).
     \item \texttt{blahut\_arimoto.py}: Implements the Blahut-Arimoto algorithm
-          with convergence tracking.
-    \item \texttt{dispersion.py}: Computes the $d$-tilted information and
-          rate-distortion dispersion.
-    \item \texttt{finite\_blocklength.py}: Computes the normal approximation and
-          finite block length bounds.
-    \item \texttt{generate\_all\_figures.py}: Master script that generates all
-          figures with consistent styling.
+          with convergence tracking (Figure~\ref{fig:ba_convergence}) and
+          validates it against the closed-form solution
+          (Figure~\ref{fig:ba_vs_closedform}).
+    \item \texttt{dispersion.py}: Computes the $d$-tilted information
+          (Figure~\ref{fig:dtilted}) and rate-distortion dispersion
+          (Figure~\ref{fig:dispersion}).
+          This script also runs a numerical verification that
+          $\E[\jmath_X(X,D)] = \RD$ to machine precision.
+    \item \texttt{finite\_blocklength.py}: Computes the normal approximation,
+          achievability/converse bounds (Figure~\ref{fig:finite_blocklength}),
+          and the rate versus block length curves
+          (Figure~\ref{fig:rate_vs_blocklength}).
+    \item \texttt{generate\_all\_figures.py}: Master script that runs all of the
+          above and generates every figure with consistent styling.
 \end{itemize}
+
+To regenerate all figures from scratch, run
+\texttt{python scripts/generate\_all\_figures.py} from the repository root.
+The only dependencies are NumPy, SciPy, and Matplotlib (see
+\texttt{requirements.txt}).
 
 \subsection{Comprehensive Comparison}
 
@@ -1456,18 +1669,6 @@ The normal approximation $R(n, D, \varepsilon) \approx \RD + \sqrt{V(D)/n}\, \Qi
 is both elegant in form and useful in practice, offering a direct design rule
 for system engineers.
 
-Several directions remain for further investigation.
-First, the extension to continuous sources, particularly the Gaussian source
-with squared-error distortion, yields an analogous theory with its own
-closed-form dispersion.
-Second, the joint source-channel coding problem, where compression and
-transmission are combined, introduces interactions between source and channel
-dispersions that are not yet fully understood.
-Third, the study of mismatched codes, where the encoder or decoder is designed
-for the wrong source distribution, is of growing practical interest in the era
-of learned compression.
-It is our hope that this tutorial provides a foundation for readers to engage
-with these and other frontiers of information theory.
 
 % ========================================================================
 % BIBLIOGRAPHY
