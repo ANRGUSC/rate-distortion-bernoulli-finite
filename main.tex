@@ -468,9 +468,18 @@ where the minimization is over all conditional distributions $p_{\hat{X}|X}$
 satisfying the distortion constraint.
 \end{definition}
 
-The rate-distortion function has a clean operational interpretation: $\RD$ is
-the minimum number of bits per source symbol required to describe the source
-with average distortion at most $D$.
+Why do we \emph{minimize} the mutual information?
+The mutual information $I(X; \hat{X})$ measures how many bits the reconstruction
+$\hat{X}$ reveals about the original source $X$.
+Any information that $\hat{X}$ carries about $X$ must have been conveyed by the
+encoder, so $I(X; \hat{X})$ is precisely the rate cost of the code.
+The distortion constraint $\E[d(X, \hat{X})] \leq D$ separately ensures that the
+reconstruction is faithful enough; our goal is then to find the cheapest
+test channel (lowest rate) that still keeps distortion within the budget $D$.
+
+The rate-distortion function therefore has a clean operational interpretation:
+$\RD$ is the minimum number of bits per source symbol required to describe the
+source with average distortion at most $D$.
 Rates above $\RD$ are achievable (there exist codes that work), while rates
 below $\RD$ are not achievable by any code, regardless of its complexity.
 
