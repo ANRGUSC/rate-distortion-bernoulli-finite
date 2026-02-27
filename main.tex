@@ -1018,7 +1018,43 @@ length theory.
 \subsection{The Finite Block Length Setup}
 \label{subsec:fbl_setup}
 
-We formalize the finite block length setting as follows.
+Before diving into the formal definitions, let us build some intuition for why
+the finite block length setting requires a fundamentally different formulation
+than the asymptotic one.
+
+The asymptotic rate-distortion function $\RD$ is a deterministic quantity.
+This is because, in the limit $n \to \infty$, the law of large numbers
+guarantees that the empirical statistics of the source sequence $X^n$ concentrate
+around their expected values.
+Almost every source sequence ``looks the same'' statistically, so a single
+codebook can handle all of them with average distortion at most $D$.
+There is no randomness left to worry about.
+
+At finite block length, the situation is different.
+The source sequence $X^n$ is random, and different realizations can be
+substantially easier or harder to compress.
+For a $\Ber(0.3)$ source with $n = 100$, most sequences will have roughly
+$30$ ones, but some will have $15$ or $45$.
+A code designed for the ``typical'' case may fail badly on these atypical
+sequences, producing a reconstruction whose distortion exceeds $D$.
+In short, the distortion achieved by any finite-$n$ code is itself a random
+variable, because it depends on which source sequence nature produces.
+
+This means we cannot simply ask for the distortion to be at most $D$ with
+certainty (that would require an enormous codebook) or merely on average (that
+would hide the possibility of catastrophic failures on some sequences).
+Instead, we allow a small \emph{failure probability} $\varepsilon$: we accept
+that a fraction~$\varepsilon$ of source sequences may result in distortion
+exceeding~$D$, but we require the code to succeed on the remaining
+$1 - \varepsilon$ fraction.
+The quantity $R(n, D, \varepsilon)$ is then deterministic again: it is the
+minimum rate at which a code of block length $n$ exists that keeps the
+failure probability below~$\varepsilon$.
+One can think of $R(n, D, \varepsilon)$ as a \emph{confidence bound}: ``with
+confidence $1 - \varepsilon$, a rate of $R(n, D, \varepsilon)$ bits per symbol
+suffices to compress the source to distortion at most~$D$.''
+
+We now formalize this precisely.
 
 \begin{definition}[$(n, M, D, \varepsilon)$ Code]
 An $(n, M, D, \varepsilon)$ lossy source code consists of an encoder
