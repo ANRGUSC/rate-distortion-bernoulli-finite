@@ -20,6 +20,12 @@
 \usepackage{caption}
 \captionsetup{font=small,labelfont=bf}
 
+% ---- Float placement: keep figures near their references ----
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.8}
+
 % ---- Theorem environments ----
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -296,7 +302,7 @@ It is zero when $p = 0$ or $p = 1$ (no uncertainty) and achieves its maximum
 value of $1$ bit when $p = 1/2$ (maximum uncertainty).
 Figure~\ref{fig:binary_entropy} illustrates this behavior.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/binary_entropy.pdf}
     \caption{The binary entropy function $\Hp$ versus the source bias $p$.
@@ -493,7 +499,7 @@ below $\RD$ are not achievable by any code, regardless of its complexity.
 Figure~\ref{fig:test_channel} illustrates the encoder-decoder structure and the
 test channel abstraction.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[>=Stealth, node distance=1.4cm, font=\small]
         % Source
@@ -932,7 +938,7 @@ $\min(p, 1-p)$ with zero rate.
 Figure~\ref{fig:rd_curves} shows the rate-distortion function for several values
 of the source bias $p$.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/rate_distortion_curves.pdf}
     \caption{The rate-distortion function $\RD = \Hp - \HD$ for a $\Ber(p)$
@@ -1123,7 +1129,7 @@ The algorithm converges rapidly, typically reaching machine precision within
 $20$--$50$ iterations.
 Larger values of $s$ correspond to lower target distortions and converge faster.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/ba_convergence.pdf}
     \caption{Convergence of the Blahut-Arimoto algorithm for $p = 0.3$ and slope
@@ -1137,7 +1143,7 @@ resulting $(D, R)$ pairs alongside the closed-form curve $\RD = \Hp - \HD$.
 Figure~\ref{fig:ba_vs_closedform} confirms that the Blahut-Arimoto algorithm
 recovers the exact rate-distortion function.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/ba_vs_closedform.pdf}
     \caption{Comparison of the Blahut-Arimoto computed rate-distortion points
@@ -1148,6 +1154,39 @@ recovers the exact rate-distortion function.
 \end{figure}
 
 % ---- 5.4 ----
+\subsection{A Concrete Worked Example}
+\label{subsec:worked_example}
+
+To bridge the gap between the abstract Blahut-Arimoto algorithm and the finite
+block length theory of Section~\ref{sec:finite_blocklength}, we construct
+a concrete $(n, M)$ code for the $\Ber(0.3)$ source.  With $n = 3$ and $M = 4$
+codewords, the optimal codebook is $\mathcal{C} = \{000, 001, 010, 100\}$: all
+sequences of Hamming weight~$0$ or~$1$.  These are the four most probable source
+sequences, and a nearest-neighbor encoder maps each remaining sequence to the
+closest codeword.  Figure~\ref{fig:codebook_example} displays the complete code.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/codebook_example.pdf}
+    \caption{A worked example of an optimal $(n{=}3,\; M{=}4)$ lossy code for
+    $\Ber(0.3)$ with Hamming distortion.
+    \textsf{(a)}~The Hamming cube $\{0,1\}^3$ with codewords shown as filled
+    circles and non-codewords as hollow circles; dashed arrows indicate the
+    nearest-neighbor encoding map.
+    \textsf{(b)}~The encoding table listing every source sequence, its
+    probability, assigned codeword, and per-symbol distortion.
+    \textsf{(c)}~The code's operating point $(\bar{D}, R) = (0.081, 0.667)$
+    compared with the Shannon limit $R(0.081) = 0.475$.}
+    \label{fig:codebook_example}
+\end{figure}
+
+The code achieves rate $R = \frac{2}{3} \approx 0.667$ bit/sym at average
+distortion $\bar{D} = 0.081$, which is $0.19$ bit/sym above the Shannon limit
+$R(0.081) = 0.475$.  This gap is the price of operating at finite block
+length --- Section~\ref{sec:finite_blocklength} quantifies precisely how it
+shrinks as $n$ grows.
+
+% ---- 5.5 ----
 \subsection{Historical Note}
 \label{subsec:ba_history}
 
@@ -1190,7 +1229,7 @@ significantly above $\RD$, but the gap narrows as $n$ grows.
 Understanding the precise rate of this convergence is the goal of finite block
 length theory.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/rate_vs_blocklength.pdf}
     \caption{The minimum achievable rate $R(n, D, \varepsilon)$ versus block length
@@ -1434,7 +1473,7 @@ takes two values:
 Figure~\ref{fig:dtilted} shows the $d$-tilted information for both source
 symbols as a function of $D$.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/dtilted_info.pdf}
     \caption{The $d$-tilted information $\jmath_X(0, D)$ and $\jmath_X(1, D)$
@@ -1493,7 +1532,7 @@ $O(\log n / n)$ remainder becomes the dominant correction.
 Figure~\ref{fig:dispersion} shows $V(D)$ as a function of $D$ for several
 source biases.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/dispersion_curves.pdf}
     \caption{The rate-distortion dispersion $V(D)$ versus distortion $D$ for a
@@ -1555,7 +1594,7 @@ is wider and the gap $R(n, D, \varepsilon) - \RD$ is more pronounced;
 at $D = 0.2$ (right), the distribution is more concentrated and the
 finite block length penalty is smaller.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/clt_histogram.pdf}
     \caption{Gaussian approximation of the per-symbol $d$-tilted information
@@ -1586,7 +1625,7 @@ overhead, distortion, and reliability.
 Figure~\ref{fig:finite_blocklength} shows the achievability bound, converse
 bound, and normal approximation for a $\Ber(0.3)$ source.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/finite_blocklength.pdf}
     \caption{Finite block length bounds for a $\Ber(0.3)$ source with $D = 0.1$
@@ -1674,7 +1713,7 @@ Shannon limit $\RD$.
 The gap is most pronounced at small distortions, where the dispersion $V(D)$ is
 larger.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\textwidth]{figures/comprehensive_comparison.pdf}
     \caption{The rate-distortion function $\RD$ (solid black) and the normal
