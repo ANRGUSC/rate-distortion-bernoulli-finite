@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+
+# Compiled PDFs (figures are tracked separately)
+main*.pdf
