@@ -8,5 +8,6 @@ __pycache__/
 *.log
 *.out
 
-# Compiled PDFs (figures are tracked separately)
-main*.pdf
+# Intermediate PDF builds (main.pdf is tracked; test builds are not)
+main_v*.pdf
+main_test*.pdf
