@@ -1,4 +1,4 @@
-\documentclass[11pt,twocolumn]{article}
+\documentclass[11pt]{article}
 
 % ---- Packages ----
 \usepackage[utf8]{inputenc}
@@ -15,7 +15,7 @@
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
 \usepackage[colorlinks=true,linkcolor=blue!70!black,citecolor=blue!70!black,urlcolor=blue!70!black]{hyperref}
 \usepackage{cite}
-\usepackage[margin=0.85in]{geometry}
+\usepackage[margin=1in]{geometry}
 \usepackage{microtype}
 \usepackage{caption}
 \captionsetup{font=small,labelfont=bf}
@@ -85,8 +85,8 @@ a well-defined minimum description rate for any prescribed level of
 distortion.
 This result, made precise in Shannon's 1959 coding theorem for sources with a
 fidelity criterion~\cite{shannon1959}, was remarkable for a reason that is easy
-to overlook today: it demonstrated that a single, clean mathematical function---the
-rate-distortion function $\RD$---separates the achievable from the impossible, no
+to overlook today: it demonstrated that a single, clean mathematical function,
+the rate-distortion function $\RD$, separates the achievable from the impossible, no
 matter how clever the compression scheme.
 
 However, this elegant theory rests on a crucial idealization.
@@ -98,10 +98,11 @@ A natural and practically important question therefore arises: \emph{how much
 extra rate do we need when the block length is finite?}
 
 Over the past two decades, a precise answer to this question has emerged through
-the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u},
+the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u}~\cite{kontoyiannis2014},
 Kostina and Verd\'{u}~\cite{kostina2012}, and others.
-The key insight is that the minimum rate at block length $n$, excess-distortion
-probability $\varepsilon$, and target distortion $D$ satisfies
+The key insight is that the minimum rate at block length $n$, target distortion $D$,
+and excess-distortion probability $\varepsilon$ (the probability that the
+reconstruction distortion exceeds $D$) satisfies
 \begin{equation}
 \label{eq:normal_approx_intro}
 R(n, D, \varepsilon) \approx \RD + \sqrt{\frac{V(D)}{n}}\, \Qinv(\varepsilon),
@@ -109,7 +110,7 @@ R(n, D, \varepsilon) \approx \RD + \sqrt{\frac{V(D)}{n}}\, \Qinv(\varepsilon),
 where $V(D)$ is the \emph{rate-distortion dispersion} and $\Qinv(\varepsilon)$
 is the inverse of the Gaussian $Q$-function.
 From an engineering standpoint, (\ref{eq:normal_approx_intro}) reveals that the
-penalty for finite block length decays as $1/\sqrt{n}$---a rate that is neither
+penalty for finite block length decays as $1/\sqrt{n}$, a rate that is neither
 negligibly fast nor prohibitively slow.
 
 In this tutorial, we develop the entire story from first principles for the simplest
@@ -117,8 +118,8 @@ non-trivial setting: a $\Ber(p)$ source with Hamming distortion.
 We have chosen this source for three reasons.
 First, the binary symmetric source is the discrete analogue of the Gaussian source:
 it is the canonical ``textbook'' example against which all intuitions are calibrated.
-Second, every quantity of interest---$\RD$, the optimal test channel, the $d$-tilted
-information, and the dispersion $V(D)$---admits a clean closed-form expression.
+Second, every quantity of interest ($\RD$, the optimal test channel, the $d$-tilted
+information, and the dispersion $V(D)$) admits a clean closed-form expression.
 Third, despite its simplicity, the Bernoulli source reveals the full structure of
 the finite block length theory, including the role of source dispersion as a
 second-order characterization of compression difficulty.
@@ -205,7 +206,7 @@ Figure~\ref{fig:binary_entropy} illustrates this behavior.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/binary_entropy.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/binary_entropy.pdf}
     \caption{The binary entropy function $\Hp$ versus the source bias $p$.
     The entropy is maximized at $p = 1/2$, where each bit carries one full bit
     of information, and vanishes at $p \in \{0, 1\}$, where the source is
@@ -268,7 +269,7 @@ An equivalent and often more intuitive expression is
 \label{eq:mi_entropy}
 I(X; \hat{X}) = H(X) - H(X | \hat{X}),
 \end{equation}
-where $H(X|\hat{X})$ is the conditional entropy---the residual uncertainty
+where $H(X|\hat{X})$ is the conditional entropy, that is, the residual uncertainty
 about $X$ after observing $\hat{X}$.
 The mutual information is always non-negative, and equals zero if and only if
 $X$ and $\hat{X}$ are independent.
@@ -334,7 +335,7 @@ For a pair of sequences $(x^n, \hat{x}^n)$, the \emph{per-symbol distortion} is
 d(x^n, \hat{x}^n) = \frac{1}{n} \sum_{i=1}^{n} d(x_i, \hat{x}_i),
 \end{equation}
 which equals the fraction of positions where the source and reconstruction
-disagree---that is, the \emph{bit error rate}.
+disagree, that is, the \emph{bit error rate}.
 
 % ---- 3.3 ----
 \subsection{The Fundamental Question}
@@ -527,7 +528,7 @@ The mutual information evaluates to
 I(X; \hat{X}) = H(\hat{X}) - H(\hat{X}|X) = H(p * D) - H(D).
 \end{equation}
 However, since we are minimizing over $D$ at the constraint boundary, and
-$H(p * D) = \Hp$ is not quite right---let us be precise.
+$H(p * D) = \Hp$ is not quite right; let us be precise.
 
 The mutual information through a BSC($D$) with $\Ber(p)$ input is
 \begin{equation}
@@ -562,7 +563,7 @@ of the source bias $p$.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/rate_distortion_curves.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/rate_distortion_curves.pdf}
     \caption{The rate-distortion function $\RD = \Hp - \HD$ for a $\Ber(p)$
     source with Hamming distortion, shown for $p \in \{0.11, 0.2, 0.3, 0.5\}$.
     Each curve is convex and decreasing, starting at $R(0) = \Hp$ and reaching
@@ -613,8 +614,8 @@ The rate-distortion function~(\ref{eq:rd_function}) is defined as a minimization
 of mutual information over a convex set of conditional distributions.
 For the Bernoulli source with Hamming distortion, we exploited the problem's
 symmetry to obtain a closed-form solution.
-However, for more complex sources---such as non-uniform discrete sources with
-non-binary alphabets or non-Hamming distortion measures---the optimization
+However, for more complex sources, such as non-uniform discrete sources with
+non-binary alphabets or non-Hamming distortion measures, the optimization
 does not admit a closed-form solution, and a computational approach is needed.
 
 The Blahut-Arimoto algorithm~\cite{blahut1972,arimoto1972} solves this
@@ -723,7 +724,7 @@ Larger values of $s$ correspond to lower target distortions and converge faster.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/ba_convergence.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/ba_convergence.pdf}
     \caption{Convergence of the Blahut-Arimoto algorithm for $p = 0.3$ and slope
     parameters $s \in \{2, 5, 10, 20\}$.
     The rate converges monotonically to its final value within a few tens of iterations.}
@@ -737,7 +738,7 @@ recovers the exact rate-distortion function.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/ba_vs_closedform.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/ba_vs_closedform.pdf}
     \caption{Comparison of the Blahut-Arimoto computed rate-distortion points
     (circles) with the closed-form curve $\RD = \Hp - \HD$ (solid line)
     for $p = 0.3$.
@@ -762,7 +763,7 @@ rate-distortion functions and channel capacities in information theory.
 % ========================================================================
 % SECTION 6: BEYOND THE ASYMPTOTIC LIMIT
 % ========================================================================
-\section{Beyond the Asymptotic Limit---Finite Block Length}
+\section{Beyond the Asymptotic Limit: Finite Block Length}
 \label{sec:finite_blocklength}
 
 In this section, we move beyond Shannon's asymptotic rate-distortion function
@@ -789,7 +790,7 @@ length theory.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/rate_vs_blocklength.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/rate_vs_blocklength.pdf}
     \caption{The minimum achievable rate $R(n, D, \varepsilon)$ versus block length
     $n$ for a $\Ber(0.3)$ source with $D = 0.1$ and several values of the
     excess-distortion probability $\varepsilon$.
@@ -884,7 +885,7 @@ symbols as a function of $D$.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/dtilted_info.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/dtilted_info.pdf}
     \caption{The $d$-tilted information $\jmath_X(0, D)$ and $\jmath_X(1, D)$
     for a $\Ber(0.3)$ source with Hamming distortion.
     When $D$ is small, both values are close to $\Hp$ (the lossless rate).
@@ -940,7 +941,7 @@ source biases.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/dispersion_curves.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/dispersion_curves.pdf}
     \caption{The rate-distortion dispersion $V(D)$ versus distortion $D$ for a
     $\Ber(p)$ source with $p \in \{0.1, 0.2, 0.3, 0.5\}$.
     For $p = 0.5$, the dispersion is identically zero (the source symbols are
@@ -974,7 +975,7 @@ $Q(x) = \frac{1}{\sqrt{2\pi}} \int_x^{\infty} e^{-t^2/2}\, dt$.
 The intuition behind this result comes from the Berry-Esseen central limit
 theorem.
 The total compression cost for an i.i.d.\ source sequence $X^n$ is
-approximately $\sum_{i=1}^n \jmath_X(X_i, D)$---a sum of i.i.d.\ random
+approximately $\sum_{i=1}^n \jmath_X(X_i, D)$, a sum of i.i.d.\ random
 variables with mean $n\RD$ and variance $nV(D)$.
 By the CLT, this sum is approximately Gaussian, and the excess-distortion
 probability translates into a Gaussian tail probability.
@@ -997,7 +998,7 @@ bound, and normal approximation for a $\Ber(0.3)$ source.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/finite_blocklength.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/finite_blocklength.pdf}
     \caption{Finite block length bounds for a $\Ber(0.3)$ source with $D = 0.1$
     and $\varepsilon = 0.1$.
     The shaded region between the achievability bound (upper) and converse bound
@@ -1095,7 +1096,7 @@ larger.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/comprehensive_comparison.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/comprehensive_comparison.pdf}
     \caption{The rate-distortion function $\RD$ (solid black) and the normal
     approximation $R(n, D, \varepsilon)$ for block lengths $n \in \{100, 500, 2000\}$,
     with $p = 0.3$ and $\varepsilon = 0.1$.
@@ -1140,8 +1141,8 @@ is both elegant in form and useful in practice, offering a direct design rule
 for system engineers.
 
 Several directions remain for further investigation.
-First, the extension to continuous sources---particularly the Gaussian source
-with squared-error distortion---yields an analogous theory with its own
+First, the extension to continuous sources, particularly the Gaussian source
+with squared-error distortion, yields an analogous theory with its own
 closed-form dispersion.
 Second, the joint source-channel coding problem, where compression and
 transmission are combined, introduces interactions between source and channel
