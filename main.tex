@@ -614,7 +614,16 @@ The corresponding Lagrange multiplier is
 \lambda^* = \ln \frac{1-D}{D},
 \end{equation}
 where $\ln$ denotes the natural logarithm.
-Note that $\lambda^*$ is the negative of the slope of the $\RD$ curve.
+This value is not a coincidence: in any constrained optimization, the Lagrange
+multiplier equals the sensitivity of the objective to the constraint.
+Here, $\lambda^*$ tells us how much the minimum rate $\RD$ changes when we relax
+the distortion budget by a small amount~$dD$.
+Formally, $\lambda^* = -R'(D)$, which we can verify directly:
+$R'(D) = -H'(D) = \log_2\frac{D}{1-D} = -\frac{1}{\ln 2}\ln\frac{1-D}{D}$,
+so $-R'(D) = \frac{\lambda^*}{\ln 2}$ in bits (or $\lambda^*$ in nats).
+The multiplier is large when $D$ is small (the rate curve is steep, so each
+additional bit of distortion saves many bits of rate) and approaches zero as
+$D \to \min(p,1-p)$ (the curve flattens near zero rate).
 
 % ---- 4.3 ----
 \subsection{The Closed-Form Result}
@@ -773,6 +782,25 @@ This is an instance of the classical alternating minimization framework, and
 convergence is guaranteed because each step decreases the Lagrangian objective.
 \end{remark}
 
+\begin{remark}[Intuition for Step~1]
+The update in~(\ref{eq:ba_step1}) has an appealing interpretation: for each source
+symbol $x$, the algorithm reweights the current reproduction distribution
+$p_{\hat{X}}(\hat{x})$ by the factor $e^{-s\,d(x,\hat{x})}$.
+Reproduction symbols $\hat{x}$ that are close to $x$ (low distortion) receive a
+weight near~$1$, while those that are far from $x$ (high distortion) are
+exponentially suppressed.
+The result is then normalized to form a valid conditional distribution.
+This is precisely a \emph{multiplicative weights update}: rather than making
+additive adjustments, the algorithm multiplies each probability by an
+exponential penalty that depends on the ``cost'' $d(x,\hat{x})$.
+Readers familiar with online learning will recognize the same mechanism at work
+in the Hedge algorithm and its bandit variant Exp3, where actions are reweighted
+by $e^{-\eta \cdot \text{loss}}$ to balance exploration and exploitation.
+In the Blahut-Arimoto setting, the slope parameter $s$ plays the role of the
+learning rate $\eta$: a larger $s$ imposes a harsher penalty on distortion,
+concentrating the test channel on the closest reproduction symbols.
+\end{remark}
+
 Algorithm~\ref{alg:ba} presents the complete pseudocode.
 
 \begin{algorithm}[t]
@@ -815,8 +843,15 @@ The updates in~(\ref{eq:ba_step1}) and~(\ref{eq:ba_step2}) become:
 p_{\hat{X}|X}(0|0) &= \frac{p_{\hat{X}}(0)}{p_{\hat{X}}(0) + p_{\hat{X}}(1)\, e^{-s}}, \\
 p_{\hat{X}|X}(0|1) &= \frac{p_{\hat{X}}(0)\, e^{-s}}{p_{\hat{X}}(0)\, e^{-s} + p_{\hat{X}}(1)}.
 \end{align}
-Since $e^{-s} = e^{-10} \approx 4.5 \times 10^{-5}$, the algorithm strongly
-penalizes symbol errors, driving the test channel toward a near-identity matrix.
+Since $e^{-s} = e^{-10} \approx 4.5 \times 10^{-5}$, the multiplicative weight
+for any mismatched reconstruction ($d(x,\hat{x}) = 1$) is tiny compared to the
+weight for a correct reconstruction ($d(x,\hat{x}) = 0$, weight~$1$).
+For example, in the numerator of $p_{\hat{X}|X}(0|0)$, the term $p_{\hat{X}}(0)$
+(correct match) appears with weight~$1$, while the denominator also includes
+$p_{\hat{X}}(1)\,e^{-10}$ (mismatch), which is roughly $10^5$ times smaller.
+The result is that $p_{\hat{X}|X}(0|0) \approx 1$ and $p_{\hat{X}|X}(1|0) \approx 0$:
+the test channel is driven toward a near-identity matrix, corresponding to very
+low distortion.
 
 Figure~\ref{fig:ba_convergence} shows the convergence of the Blahut-Arimoto
 algorithm for $p = 0.3$ and several values of the slope parameter $s$.
