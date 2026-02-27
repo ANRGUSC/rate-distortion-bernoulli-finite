@@ -100,15 +100,37 @@ extra rate do we need when the block length is finite?}
 Over the past two decades, a precise answer to this question has emerged through
 the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u}~\cite{kontoyiannis2014},
 Kostina and Verd\'{u}~\cite{kostina2012}, and others.
-The key insight is that the minimum rate at block length $n$, target distortion $D$,
-and excess-distortion probability $\varepsilon$ (the probability that the
-reconstruction distortion exceeds $D$) satisfies
+To state their result, we must first refine what ``achievable'' means at finite
+block length.
+When $n$ is finite, no code can guarantee that every source sequence is
+reproduced within distortion $D$.
+The source sequence $X^n$ is random, and some realizations are inherently harder
+to compress than others.
+We therefore allow a small probability of failure: we require only that the
+distortion exceeds $D$ with probability at most $\varepsilon$.
+More precisely, we say a code is $(n, D, \varepsilon)$-achievable at rate $R$
+if the probability that the per-symbol distortion between the random source
+sequence $X^n$ and its reconstruction $\hat{X}^n$ exceeds $D$ is at most
+$\varepsilon$:
+\begin{equation}
+\label{eq:excess_distortion_intro}
+\Prob\!\left(\frac{1}{n}\sum_{i=1}^{n} d(X_i, \hat{X}_i) > D\right) \leq \varepsilon.
+\end{equation}
+Here the probability is over the randomness of the source.
+The quantity $\varepsilon$ is called the \emph{excess-distortion probability}.
+With this formulation, the minimum achievable rate $R(n, D, \varepsilon)$
+depends on three parameters: the block length $n$, the target distortion $D$,
+and the tolerated failure probability $\varepsilon$.
+
+The key insight of the finite block length theory is that $R(n, D, \varepsilon)$
+admits a clean asymptotic expansion:
 \begin{equation}
 \label{eq:normal_approx_intro}
 R(n, D, \varepsilon) \approx \RD + \sqrt{\frac{V(D)}{n}}\, \Qinv(\varepsilon),
 \end{equation}
-where $V(D)$ is the \emph{rate-distortion dispersion} and $\Qinv(\varepsilon)$
-is the inverse of the Gaussian $Q$-function.
+where $V(D)$ is the \emph{rate-distortion dispersion}, a quantity that captures
+how variable the compression difficulty is across source symbols, and
+$\Qinv(\varepsilon)$ is the inverse of the Gaussian $Q$-function.
 From an engineering standpoint, (\ref{eq:normal_approx_intro}) reveals that the
 penalty for finite block length decays as $1/\sqrt{n}$, a rate that is neither
 negligibly fast nor prohibitively slow.
