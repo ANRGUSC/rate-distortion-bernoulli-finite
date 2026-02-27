@@ -100,23 +100,35 @@ extra rate do we need when the block length is finite?}
 Over the past two decades, a precise answer to this question has emerged through
 the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u}~\cite{kontoyiannis2014},
 Kostina and Verd\'{u}~\cite{kostina2012}, and others.
-To state their result, we must first refine what ``achievable'' means at finite
+To state their result, we need two preliminary ideas.
+
+The first is a \emph{distortion measure}: a function $d(x, \hat{x})$ that
+quantifies how ``far'' a reconstruction symbol $\hat{x}$ is from the original
+source symbol $x$.
+For binary data, the simplest and most natural choice is the \emph{Hamming
+distortion}, which equals $1$ when $x \neq \hat{x}$ and $0$ when $x = \hat{x}$.
+When we compress a length-$n$ source sequence $X^n = (X_1, \ldots, X_n)$ into
+a reconstruction $\hat{X}^n = (\hat{X}_1, \ldots, \hat{X}_n)$, the overall
+quality is measured by the \emph{per-symbol distortion}
+$\frac{1}{n}\sum_{i=1}^{n} d(X_i, \hat{X}_i)$,
+which under Hamming distortion is simply the fraction of positions where the
+source and reconstruction disagree (the bit error rate).
+
+The second idea is that we must refine what ``achievable'' means at finite
 block length.
-When $n$ is finite, no code can guarantee that every source sequence is
+When $n$ is finite, no code can guarantee that \emph{every} source sequence is
 reproduced within distortion $D$.
 The source sequence $X^n$ is random, and some realizations are inherently harder
 to compress than others.
 We therefore allow a small probability of failure: we require only that the
 distortion exceeds $D$ with probability at most $\varepsilon$.
 More precisely, we say a code is $(n, D, \varepsilon)$-achievable at rate $R$
-if the probability that the per-symbol distortion between the random source
-sequence $X^n$ and its reconstruction $\hat{X}^n$ exceeds $D$ is at most
-$\varepsilon$:
+if
 \begin{equation}
 \label{eq:excess_distortion_intro}
-\Prob\!\left(\frac{1}{n}\sum_{i=1}^{n} d(X_i, \hat{X}_i) > D\right) \leq \varepsilon.
+\Prob\!\left(\frac{1}{n}\sum_{i=1}^{n} d(X_i, \hat{X}_i) > D\right) \leq \varepsilon,
 \end{equation}
-Here the probability is over the randomness of the source.
+where the probability is over the randomness of the source sequence $X^n$.
 The quantity $\varepsilon$ is called the \emph{excess-distortion probability}.
 With this formulation, the minimum achievable rate $R(n, D, \varepsilon)$
 depends on three parameters: the block length $n$, the target distortion $D$,
