@@ -134,9 +134,20 @@ per symbol.
 Since our simple code operates at rate $0.5$, well above the Shannon limit of
 $0.189$, there is considerable room for improvement, but only in the limit of
 large block lengths.
-For $n = 2$, we cannot do much better.
-This gap between what a short code achieves and what the Shannon limit promises
-is precisely what finite block length theory quantifies.
+For $n = 2$, it turns out, we cannot do better.
+To see why, observe that any code with $M = 2$ codewords must partition the four
+source sequences into two groups of two, mapping each group to a single
+reconstruction.
+Within each group, one sequence matches the reconstruction perfectly
+(distortion~$0$) and the other disagrees in at least one of the two positions
+(distortion at least~$1/2$).
+Since all four sequences are equally likely, the average distortion is at least
+$(0 + 1/2 + 0 + 1/2)/4 = 1/4$, which is exactly what our code achieves.
+The gap between this finite-$n$ optimum of $D = 0.25$ at rate $0.5$ and the
+Shannon limit of $R(0.25) \approx 0.189$ at the same distortion illustrates a
+fundamental phenomenon: short codes pay a rate penalty compared to the
+asymptotic limit.
+Quantifying this penalty precisely is the goal of finite block length theory.
 
 Over the past two decades, a precise answer to this question has emerged through
 the work of Strassen~\cite{strassen1962}, Kontoyiannis and Verd\'{u}~\cite{kontoyiannis2014},
