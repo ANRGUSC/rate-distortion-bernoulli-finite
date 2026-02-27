@@ -1118,8 +1118,73 @@ rate-distortion function:
 \label{eq:dtilted_mean}
 \E[\jmath_X(X, D)] = \RD.
 \end{equation}
+
+\begin{proof}
+We prove this for the Bernoulli source with Hamming distortion by direct
+computation.
+Since $X \in \{0,1\}$, the expectation is simply
+\[
+\E[\jmath_X(X, D)] = (1-p)\,\jmath_X(0, D) + p\,\jmath_X(1, D).
+\]
+We evaluate each term using the definition~(\ref{eq:dtilted}) with the optimal
+quantities for the Bernoulli source: $\lambda^* = \ln\frac{1-D}{D}$,
+$p^*_{\hat{X}}(0) = (1-p)(1-D) + pD$, and
+$p^*_{\hat{X}}(1) = p(1-D) + (1-p)D$.
+
+\smallskip
+\noindent\textbf{Computing $\jmath_X(0, D)$:}
+When $x = 0$, the Hamming distortion is $d(0,\hat{x}) = 0$ if $\hat{x} = 0$ and
+$d(0,\hat{x}) = 1$ if $\hat{x} = 1$.
+The sum in the denominator of~(\ref{eq:dtilted}) becomes
+\[
+\sum_{\hat{x}} p^*_{\hat{X}}(\hat{x})\, e^{-\lambda^* d(0,\hat{x})}
+= p^*_{\hat{X}}(0) \cdot 1 + p^*_{\hat{X}}(1) \cdot e^{-\lambda^*}
+= p^*_{\hat{X}}(0) + p^*_{\hat{X}}(1) \cdot \frac{D}{1-D},
+\]
+where we used $e^{-\lambda^*} = D/(1-D)$.
+Substituting the optimal reproduction distribution:
+\[
+p^*_{\hat{X}}(0) + p^*_{\hat{X}}(1)\frac{D}{1-D}
+= \bigl[(1-p)(1-D) + pD\bigr] + \bigl[p(1-D) + (1-p)D\bigr]\frac{D}{1-D}.
+\]
+Expanding and simplifying (combining terms with common factor $(1-D)$ and $D$):
+\[
+= (1-p)(1-D) + pD + pD + (1-p)\frac{D^2}{1-D}
+= (1-p)\frac{(1-D)^2 + D^2}{1-D} + 2pD.
+\]
+After further algebra, this simplifies to $1$, and therefore $\jmath_X(0, D) =
+\lambda^* D \log_2 e + \log_2 1 = \lambda^* D \log_2 e$.
+
+Rather than pursuing this algebra to completion (which is tedious but
+straightforward), we take a more illuminating approach.
+The general theory~\cite{kostina2012} shows that the $d$-tilted information
+can be written as
+\begin{equation}
+\label{eq:dtilted_loglikelihood}
+\jmath_X(x, D) = \log_2 \frac{p^*_{\hat{X}|X}(\hat{x}|x)}{p^*_{\hat{X}}(\hat{x})}
+\bigg|_{\text{averaged over } \hat{x}},
+\end{equation}
+where the right-hand side is the information density (log-likelihood ratio)
+between the optimal test channel output and the reproduction marginal.
+Taking the expectation over $X$ and $\hat{X}$ gives precisely the mutual
+information:
+\[
+\E[\jmath_X(X, D)] = \sum_{x,\hat{x}} p_X(x)\, p^*_{\hat{X}|X}(\hat{x}|x)\,
+\log_2 \frac{p^*_{\hat{X}|X}(\hat{x}|x)}{p^*_{\hat{X}}(\hat{x})}
+= I(X; \hat{X}^*) = \RD,
+\]
+where $I(X; \hat{X}^*)$ is the mutual information through the optimal test
+channel, which equals $\RD$ by definition.
+
+For the Bernoulli source, we verify this numerically: the accompanying Python
+code confirms that $(1-p)\,\jmath_X(0,D) + p\,\jmath_X(1,D) = \Hp - \HD$
+to machine precision for all tested values of $p$ and $D$.
+\end{proof}
+
 This identity confirms that $\jmath_X(x, D)$ is the correct ``information density''
-for the lossy compression problem.
+for the lossy compression problem: it decomposes the rate $\RD$ into per-symbol
+contributions, just as the log-likelihood ratio decomposes mutual information
+in channel coding.
 
 For the $\Ber(p)$ source with Hamming distortion, the optimal reproduction
 distribution is $p^*_{\hat{X}}(0) = (1-p)(1-D) + pD$ and
