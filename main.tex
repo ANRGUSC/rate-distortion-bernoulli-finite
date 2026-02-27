@@ -117,11 +117,23 @@ We have thus constructed a concrete code operating at rate $R = 0.5$ and
 distortion $D = 0.25$.
 
 Is this the best we can do at rate $0.5$?
-Shannon's rate-distortion theory will tell us the answer.
-For a $\Ber(0.5)$ source, the rate-distortion function is
-$R(D) = 1 - H(D)$, which gives $R(0.25) \approx 0.189$ bits per symbol.
-Since our code operates at rate $0.5$, well above $0.189$, there is
-considerable room for improvement, but only in the limit of large block lengths.
+Shannon's rate-distortion theory provides the answer.
+One of the landmark results of information theory, derived in detail in
+Section~\ref{sec:bernoulli_rd}, is that for a $\Ber(p)$ source with Hamming
+distortion, the minimum achievable rate at distortion level $D$ is
+\begin{equation}
+\label{eq:rd_intro}
+\RD = \Hp - \HD, \qquad 0 \leq D \leq \min(p, 1-p),
+\end{equation}
+where $\Hp = -p\log_2 p - (1-p)\log_2(1-p)$ is the \emph{binary entropy
+function}, which measures the inherent uncertainty of the source.
+For a fair coin ($p = 0.5$), we have $H(0.5) = 1$ bit, so the formula
+simplifies to $\RD = 1 - \HD$.
+Evaluating at $D = 0.25$ gives $R(0.25) = 1 - H(0.25) \approx 0.189$ bits
+per symbol.
+Since our simple code operates at rate $0.5$, well above the Shannon limit of
+$0.189$, there is considerable room for improvement, but only in the limit of
+large block lengths.
 For $n = 2$, we cannot do much better.
 This gap between what a short code achieves and what the Shannon limit promises
 is precisely what finite block length theory quantifies.
