@@ -328,7 +328,12 @@ probability, a sequence drawn from a $\Ber(p)$ source satisfies
 \end{equation}
 Intuitively, there are approximately $2^{n\Hp}$ typical sequences, and they
 account for almost all of the probability mass.
-This observation is the foundation of both lossless and lossy compression.
+This observation is the foundation of both lossless and lossy compression:
+loosely speaking, it suggests that we could represent all likely source sequences
+by mapping them to just these $2^{n\Hp}$ typical sequences, each of which could
+be identified using only $n \cdot \Hp$ bits.
+In other words, each source symbol that nominally requires one bit to describe
+can, on average, be compressed down to $\Hp$ bits.
 
 % ---- 2.4 ----
 \subsection{Mutual Information}
