@@ -1310,6 +1310,131 @@ The fundamental result of finite block length theory is a precise
 characterization of $R(n, D, \varepsilon)$.
 
 % ---- 6.3 ----
+\subsection{A Type-Based Derivation}
+\label{subsec:type_derivation}
+
+Before introducing the general machinery of $d$-tilted information, we sketch
+a simpler, more elementary route to the normal approximation that exploits the
+structure of the Bernoulli source with Hamming
+distortion~\cite{ingber2011}.
+This approach uses the method of types and the central limit theorem;
+it gives a transparent derivation of the dispersion for this special case.
+
+\paragraph{The type summarizes the block.}
+A source sequence $x^n \in \{0,1\}^n$ drawn i.i.d.\ from $\Ber(p)$ has
+$k = \sum_{i=1}^{n} x_i$ ones.
+The integer $k$ determines the \emph{type} (empirical distribution)
+$\hat{p}_n = k/n$, and the \emph{type class}
+$T_k = \{x^n \in \{0,1\}^n : \sum_i x_i = k\}$ has size $\binom{n}{k}$.
+The sufficient statistic for compression is just the count
+$K = \sum_i X_i \sim \mathrm{Bin}(n, p)$.
+
+\paragraph{Rate needed for a given type.}
+For a sequence of type $k/n$, the rate-distortion function applied to the
+empirical distribution gives a ``local'' rate
+\begin{equation}
+\label{eq:local_rate}
+R(k/n,\, D) \;=\; H(k/n) - \HD,
+\end{equation}
+provided $k/n \geq D$ (otherwise $R = 0$).
+At the exponential scale, covering all $\binom{n}{k} \approx 2^{nH(k/n)}$
+sequences in $T_k$ by Hamming balls of radius $nD$ (each of size roughly
+$2^{n\HD}$) requires about $2^{n[H(k/n) - \HD]}$ codewords.
+
+\paragraph{Excess-distortion as a type fluctuation.}
+If we use a codebook of rate $R$, it suffices for type class $T_k$ whenever
+$H(k/n) - \HD \leq R$.
+A code fails when the source sequence has ``too many'' or ``too few'' ones---that
+is, when the empirical entropy $H(\hat{p}_n)$ is too large.
+The excess-distortion event therefore reduces to a fluctuation of the type:
+\[
+\Prob\!\bigl(d(X^n, g_n(f_n(X^n))) > D\bigr)
+\;\approx\;
+\Prob\!\bigl(H(\hat{p}_n) - \HD > R\bigr).
+\]
+
+\paragraph{Exact binomial formulation.}
+Define $g_n(k) = H(k/n) - \HD$ for $k = 0, 1, \ldots, n$.
+The excess-distortion probability at rate $R$ is then
+\begin{equation}
+\label{eq:type_excess}
+\Prob\!\bigl(g_n(K) > R\bigr)
+\;=\; \sum_{\substack{k=0 \\[1pt] g_n(k) > R}}^{n}
+\binom{n}{k}\, p^k (1-p)^{n-k}.
+\end{equation}
+The \emph{type-based optimal rate} is
+\[
+R_{\mathrm{type}}(n, D, \varepsilon)
+\;=\; \inf\!\Bigl\{R \geq 0 :
+\Prob\!\bigl(g_n(K) > R\bigr) \leq \varepsilon\Bigr\}.
+\]
+This is the exact binomial-quantile version of the finite block length
+rate-distortion problem for the Bernoulli source.
+
+\paragraph{Gaussian approximation via the delta method.}
+By the central limit theorem,
+$\hat{p}_n = K/n \approx \mathcal{N}\!\bigl(p,\; p(1-p)/n\bigr)$
+for large $n$.
+The function $g(\hat{p}) = H(\hat{p}) - \HD$ is smooth in $\hat{p}$, so the
+delta method gives
+\[
+g(\hat{p}_n) \;\approx\;
+\mathcal{N}\!\Bigl(g(p),\;
+\bigl[g'(p)\bigr]^2 \,\frac{p(1-p)}{n}\Bigr).
+\]
+The derivative of the binary entropy is
+$g'(\hat{p}) = H'(\hat{p}) = \log_2\!\frac{1-\hat{p}}{\hat{p}}$,
+so $g'(p) = \log_2\!\frac{1-p}{p}$ and
+\[
+\Var\!\bigl(g(\hat{p}_n)\bigr)
+\;\approx\;
+\frac{1}{n}\,p(1-p)\,\Bigl[\log_2\frac{1-p}{p}\Bigr]^{\!2}
+\;=\; \frac{V}{n},
+\]
+where
+\begin{equation}
+\label{eq:V_type}
+V \;=\; p(1-p)\,\Bigl[\log_2\frac{1-p}{p}\Bigr]^{\!2}.
+\end{equation}
+Setting
+$\Prob\!\bigl(g(\hat{p}_n) > R\bigr) = \varepsilon$ and inverting the
+Gaussian tail gives the normal approximation
+\[
+R(n, D, \varepsilon)
+\;\approx\;
+\RD + \sqrt{\frac{V}{n}}\;\Qinv(\varepsilon)
++ o\!\left(\frac{1}{\sqrt{n}}\right).
+\]
+
+\paragraph{$V$ does not depend on $D$.}
+Equation~(\ref{eq:V_type}) is striking: the dispersion $V$ depends on the
+source parameter $p$ but \emph{not} on the target distortion $D$.
+The reason is immediate from the type viewpoint: the randomness in
+$g(\hat{p}_n) = H(\hat{p}_n) - \HD$ comes entirely from $H(\hat{p}_n)$;
+the term $-\HD$ is a deterministic shift that affects the mean but not the
+variance.
+This $D$-independence is special to the Bernoulli source with Hamming
+distortion and does not hold for general sources.
+
+\paragraph{Caveat.}
+The type-based argument above treats the covering number
+$|T_k|/|B(x, nD)|$ as exact;
+in reality, this ratio is only a first-order (exponential-scale) approximation
+to the true codebook size.
+Consequently, this derivation is a heuristic sketch, not a rigorous
+proof---the rigorous bound requires the $d$-tilted information framework
+developed in the next subsection.
+
+\paragraph{Transition.}
+The type-based route works beautifully for the Bernoulli source because the
+empirical entropy $H(\hat{p}_n)$ captures all the relevant randomness.
+For general sources and distortion measures, there is no equally simple
+sufficient statistic, and the type argument breaks down.
+The \emph{$d$-tilted information}, introduced next, provides the
+generalization: it reduces to $H(\hat{p}_n) - \HD$ for the Bernoulli case but
+applies to arbitrary memoryless sources.
+
+% ---- 6.4 ----
 \subsection{The $d$-Tilted Information}
 \label{subsec:dtilted}
 
@@ -1484,7 +1609,7 @@ symbols as a function of $D$.
     \label{fig:dtilted}
 \end{figure}
 
-% ---- 6.4 ----
+% ---- 6.5 ----
 \subsection{Dispersion: The Key Second-Order Quantity}
 \label{subsec:dispersion}
 
@@ -1543,7 +1668,7 @@ source biases.
     \label{fig:dispersion}
 \end{figure}
 
-% ---- 6.5 ----
+% ---- 6.6 ----
 \subsection{The Normal Approximation}
 \label{subsec:normal_approx}
 
@@ -1637,7 +1762,7 @@ bound, and normal approximation for a $\Ber(0.3)$ source.
     \label{fig:finite_blocklength}
 \end{figure}
 
-% ---- 6.6 ----
+% ---- 6.7 ----
 \subsection{Historical Note}
 \label{subsec:fbl_history}
 
